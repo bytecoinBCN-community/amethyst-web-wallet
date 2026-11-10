@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f1720">
+<!-- Scripts only from this site (walletd's embind glue needs eval for WebAssembly); the page talks to nodes over
+     https (or a local http node); no inline scripts, frames, plugins or form posts. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval'; worker-src 'self'; connect-src 'self' https: http://localhost:* http://127.0.0.1:*; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Amethyst Web Wallet</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="BCN Wallet">
+<style>
+  :root {
+    --bg: #f4f6f8; --card: #ffffff; --text: #16202a; --muted: #5d6b78; --line: #dde3e8;
+    --accent: #0b7a5c; --accent-text: #ffffff; --warn: #a34a00; --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0f1720; --card: #17222d; --text: #e6edf3; --muted: #93a3b1; --line: #263544;
+      --accent: #2fbf8f; --accent-text: #06231a; --warn: #f0a050; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+    font: 16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 480px; margin: 0 auto; padding: 16px 16px calc(24px + env(safe-area-inset-bottom)); }
+  header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  h1 { font-size: 18px; margin: 0; }
+  .pill { font-size: 12px; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
+  .pill.ok { color: var(--accent); border-color: var(--accent); }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px; margin-bottom: 12px; }
+  .label { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin-bottom: 4px; }
+  .balance { font-size: 32px; font-weight: 650; font-variant-numeric: tabular-nums; }
+  .sub { font-size: 14px; color: var(--muted); }
+  .mono { font-family: var(--mono); font-size: 13px; word-break: break-all; }
+  button { font: inherit; border: 0; border-radius: 10px; padding: 12px 14px; width: 100%; cursor: pointer;
+    background: var(--accent); color: var(--accent-text); font-weight: 600; margin-top: 8px; }
+  button.secondary { background: transparent; color: var(--text); border: 1px solid var(--line); }
+  button:disabled { opacity: .5; cursor: default; }
+  textarea, input, select { font: inherit; width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 10px;
+    background: var(--bg); color: var(--text); }
+  textarea { min-height: 96px; font-family: var(--mono); font-size: 14px; }
+  .progress { height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; margin: 10px 0 6px; }
+  .progress > div { height: 100%; width: 0; background: var(--accent); transition: width .4s; }
+  .warn { color: var(--warn); font-size: 14px; }
+  ul.tx { list-style: none; margin: 0; padding: 0; }
+  ul.tx li { display: flex; justify-content: space-between; gap: 8px; padding: 8px 0; border-top: 1px solid var(--line); font-size: 14px; }
+  ul.tx li:first-child { border-top: 0; }
+  .in { color: var(--accent); } .out { color: var(--warn); }
+  details summary { cursor: pointer; color: var(--muted); font-size: 14px; }
+  pre.log { max-height: 220px; overflow: auto; font-size: 11px; white-space: pre-wrap; word-break: break-all; margin: 8px 0 0; }
+  .hidden { display: none; }
+  .row { display: flex; gap: 8px; } .row > * { flex: 1; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Bytecoin · light wallet</h1>
+    <span id="engine" class="pill">loading…</span>
+  </header>
+
+  <section id="setup" class="card hidden">
+    <div class="label">Wallet in this browser</div>
+    <p class="sub">Keys never leave this device. The blockchain is not downloaded: walletd in WebAssembly asks a node only for the data the wallet needs.</p>
+    <button id="btn-new">Create a new wallet</button>
+    <button id="btn-restore-show" class="secondary">Restore from recovery phrase</button>
+    <div id="restore" class="hidden">
+      <p class="sub">24 BIP39 words (amethyst wallet). Scanning starts at the amethyst height (≈1,725,000).</p>
+      <textarea id="restore-words" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="word1 word2 …"></textarea>
+      <button id="btn-restore">Restore</button>
+    </div>
+    <button id="btn-import-show" class="secondary">Restore from backup file</button>
+    <div id="import" class="hidden">
+      <p class="sub">The .amwbackup file saved under “Security”, and the password it was encrypted with.</p>
+      <input id="import-file" type="file" accept=".amwbackup,application/octet-stream">
+      <input id="import-pass" type="password" autocomplete="off" placeholder="Backup password" style="margin-top:8px">
+      <button id="btn-import">Restore</button>
+      <p id="import-msg" class="warn"></p>
+    </div>
+  </section>
+
+  <section id="newwords" class="card hidden">
+    <div class="label">Write down your recovery phrase</div>
+    <p class="warn">It is the only way to restore the wallet. This is a test prototype: do not keep significant funds here.</p>
+    <p id="words" class="mono"></p>
+    <button id="btn-words-ok">I wrote it down, continue</button>
+  </section>
+
+  <section id="setpin" class="card hidden">
+    <div class="label">Choose a PIN</div>
+    <p class="sub">It encrypts the wallet in this browser. Without the PIN the wallet cannot be opened here, only restored from the recovery phrase.</p>
+    <input id="pin1" type="password" inputmode="numeric" autocomplete="new-password" placeholder="PIN, at least 6 characters">
+    <input id="pin2" type="password" inputmode="numeric" autocomplete="new-password" placeholder="Repeat the PIN" style="margin-top:8px">
+    <button id="btn-pin-set">Save wallet</button>
+    <p id="setpin-msg" class="warn"></p>
+  </section>
+
+  <section id="unlock" class="card hidden">
+    <div class="label">Wallet locked</div>
+    <p id="unlock-addr" class="mono sub"></p>
+    <input id="pin-unlock" type="password" inputmode="numeric" autocomplete="current-password" placeholder="PIN">
+    <button id="btn-unlock">Unlock</button>
+    <p id="unlock-msg" class="warn"></p>
+    <button id="btn-unlock-forget" class="secondary">Forget this wallet in this browser</button>
+  </section>
+
+  <section id="wallet" class="hidden">
+    <div class="card">
+      <div class="label">Balance</div>
+      <div class="balance"><span id="bal">—</span> <span class="sub">BCN</span></div>
+      <div class="sub">Locked / unconfirmed: <span id="bal-locked">—</span></div>
+    </div>
+    <div class="card">
+      <div class="label">Sync</div>
+      <div class="progress"><div id="prog"></div></div>
+      <div class="sub" id="sync">—</div>
+    </div>
+    <div class="card">
+      <div class="label">Receiving address</div>
+      <p id="addr" class="mono">—</p>
+      <button id="btn-copy" class="secondary">Copy address</button>
+    </div>
+    <div class="card">
+      <div class="label">Send BCN</div>
+      <div id="send-form">
+        <input id="send-to" placeholder="Recipient address (bcn…)" autocomplete="off" autocapitalize="off" spellcheck="false">
+        <div class="row" style="margin-top:8px">
+          <input id="send-amount" inputmode="decimal" placeholder="Amount, BCN" autocomplete="off">
+          <button id="btn-max" class="secondary" style="margin-top:0;flex:0 0 auto;width:auto">Max</button>
+        </div>
+        <label class="sub" style="display:flex;gap:8px;align-items:center;margin-top:8px">
+          <input id="send-subtract" type="checkbox" style="width:auto"> Subtract the fee from the amount
+        </label>
+        <button id="btn-prepare">Prepare</button>
+      </div>
+      <div id="send-confirm" class="hidden">
+        <p class="sub" style="margin:0 0 4px">Recipient</p>
+        <p id="c-to" class="mono" style="margin:0 0 8px"></p>
+        <p class="sub" style="margin:0">Amount: <b id="c-amount"></b> BCN · fee: <b id="c-fee"></b> BCN</p>
+        <p class="sub" style="margin:0">Total to be deducted: <b id="c-total"></b> BCN</p>
+        <div class="row">
+          <button id="btn-cancel" class="secondary">Cancel</button>
+          <button id="btn-send">Send</button>
+        </div>
+      </div>
+      <p id="send-msg" class="sub" style="margin:8px 0 0"></p>
+    </div>
+    <div class="card">
+      <div class="label">Recent transactions</div>
+      <ul id="txs" class="tx"><li class="sub">none yet</li></ul>
+    </div>
+    <div class="card">
+      <div class="label">Security</div>
+      <button id="btn-backup-show" class="secondary">Show recovery phrase (backup)</button>
+      <div id="backup" class="hidden">
+        <input id="pin-backup" type="password" inputmode="numeric" autocomplete="current-password" placeholder="PIN" style="margin-top:8px">
+        <button id="btn-backup">Show</button>
+        <p id="backup-words" class="mono"></p>
+      </div>
+      <button id="btn-export-show" class="secondary">Save an encrypted backup file</button>
+      <div id="export" class="hidden">
+        <p class="sub">The file holds the recovery phrase, encrypted with a separate password (not the PIN), and the wallet's
+          creation date, so restoring from it scans only blocks after that date. Keep the file and the password apart.</p>
+        <input id="pin-export" type="password" inputmode="numeric" autocomplete="current-password" placeholder="PIN" style="margin-top:8px">
+        <input id="export-pass1" type="password" autocomplete="new-password" placeholder="Backup password, at least 10 characters" style="margin-top:8px">
+        <input id="export-pass2" type="password" autocomplete="new-password" placeholder="Repeat the backup password" style="margin-top:8px">
+        <button id="btn-export">Save file</button>
+      </div>
+      <button id="btn-pin-change-show" class="secondary">Change PIN</button>
+      <div id="pinchange" class="hidden">
+        <input id="pin-old" type="password" inputmode="numeric" autocomplete="current-password" placeholder="Current PIN" style="margin-top:8px">
+        <input id="pin-new1" type="password" inputmode="numeric" autocomplete="new-password" placeholder="New PIN" style="margin-top:8px">
+        <input id="pin-new2" type="password" inputmode="numeric" autocomplete="new-password" placeholder="Repeat the new PIN" style="margin-top:8px">
+        <button id="btn-pin-change">Change</button>
+      </div>
+      <p id="sec-msg" class="sub"></p>
+      <button id="btn-lock">Lock</button>
+    </div>
+    <button id="btn-forget" class="secondary">Close and forget the wallet in this browser</button>
+  </section>
+
+  <div class="card">
+    <div class="label">Node</div>
+    <p id="node-cur" class="sub mono" style="margin:0 0 8px">searching…</p>
+    <select id="node-sel">
+      <option value="auto">Auto: this site → node01 → node02</option>
+      <option value="self">This site (proxy to its own node)</option>
+      <option value="https://node01.bytecoin.org:8091">node01.bytecoin.org</option>
+      <option value="https://node02.bytecoin.org:8091">node02.bytecoin.org</option>
+      <option value="custom">Custom address…</option>
+    </select>
+    <input id="node-custom" class="hidden" placeholder="https://host:port" autocomplete="off" autocapitalize="off" spellcheck="false" style="margin-top:8px">
+    <button id="btn-node" class="secondary">Apply (the wallet will be locked)</button>
+    <p id="node-msg" class="warn"></p>
+    <p class="sub" style="margin:0">The node sees which blocks and transactions the wallet requests and your IP address, but not your keys.
+      The public node01/node02 are run by the Bytecoin developers and allow CORS, so they work directly from the browser,
+      but they do not share their pool of unconfirmed transactions: an incoming payment appears once it is in a block (≈2 min).</p>
+  </div>
+
+  <div class="card">
+    <details>
+      <summary>walletd log</summary>
+      <pre id="log" class="log mono"></pre>
+    </details>
+  </div>
+</main>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+# Response headers for Cloudflare Pages / Netlify (GitHub Pages ignores this file).
+# The CSP is also set as a <meta> in index.html; frame-ancestors only works as a header.
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval'; worker-src 'self'; connect-src 'self' https: http://localhost:* http://127.0.0.1:*; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+
+/sw.js
+  Cache-Control: no-cache

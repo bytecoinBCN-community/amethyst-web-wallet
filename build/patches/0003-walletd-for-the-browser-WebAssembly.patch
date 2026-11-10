@@ -1,0 +1,703 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Bytecoin Community <community@localhost>
+Date: Tue, 10 Nov 2026 12:00:00 +0000
+Subject: [PATCH] walletd for the browser (WebAssembly)
+
+The source already has __EMSCRIPTEN__ paths for walletd (requests from
+JavaScript through embind, fetch() to the node, wallet and cache in
+IndexedDB, ext_create_wallet / ext_open_wallet RPC), used by the 2019
+Bytecoin Zero web wallet, but no entry point and no build for them.
+
+- src/main_wasm.cpp: entry point, the equivalent of `walletd --app`.
+  Exports create_mnemonic() and check_mnemonic() to JavaScript, because
+  walletd has no RPC for a new mnemonic. Commits the wallet cache every
+  15 s instead of 111 s, since a browser tab can close at any moment.
+- Wallet file encryption (WalletNodeExt): with a non-empty wallet_password
+  the IndexedDB wallet file, which holds the mnemonic, is stored as
+  "bcnwallet2" | salt | iv | ChaCha20 | HMAC-SHA256, keys from
+  PBKDF2-HMAC-SHA512 (250000 iterations). The MAC also covers the
+  IndexedDB key, so a file copied into another wallet's slot does not
+  open. "bcnwallet1" files (100000 iterations, no key in the MAC) and
+  plain files from older builds open as before and are rewritten as
+  "bcnwallet2" on first open with a password. ext_set_password
+  re-encrypts. Wrong password gives error 207.
+- WalletSync: a node that refuses sync_mem_pool with "Authorization
+  Required" (the public node01/node02.bytecoin.org do) is no longer a
+  sync error repeated every few seconds. walletd stops asking for the
+  memory pool and keeps syncing blocks; unconfirmed incoming transfers
+  then appear once they are in a block.
+- WalletHDJson::export_keys() returns the mnemonic (was a TODO returning
+  an empty string), so get_wallet_info with need_secrets can back it up.
+- MulticoreWallet: the worker variant (-Dbytecoin_WASM_WORKERS, default in
+  wasm-wallet/emcc_build.sh) no longer creates nested workers, which some
+  browsers lack. walletd posts work to the page, the page runs one
+  walletworker per CPU core and returns results via walletd_pool_result().
+  The worker count comes from navigator.hardwareConcurrency (2..8).
+  Without the define, a single-threaded variant prepares outputs on the
+  walletd thread in ~50 ms slices.
+
+Build with Emscripten 3.1.64 (see wasm-wallet/emcc_build.sh). Node-side
+files (Node*, BlockChain*, Archive, Ledger, Trezor, http/Client) do not
+compile for WebAssembly and are not needed. Consensus and native builds
+unchanged.
+---
+ src/Core/MulticoreWallet.cpp | 151 ++++++++++++++++++++++++++++++++++++++++--------------------
+ src/Core/MulticoreWallet.hpp | 53 ++++++++++++++++++++++++++++++++++++++++-----
+ src/Core/WalletHD.hpp        | 3 +++
+ src/Core/WalletNodeExt.cpp   | 176 ++++++++++++++++++++++++++++++++++++++++-------
+ src/Core/WalletNodeExt.hpp   | 6 ++++++
+ src/Core/WalletSync.cpp      | 13 +++++++++++--
+ src/Core/WalletSync.hpp      | 1 +
+ src/main_wasm.cpp            | 54 ++++++++++++++++++++++++++++++++++++++++
+ 8 files changed, 411 insertions(+), 46 deletions(-)
+
+diff --git a/src/Core/MulticoreWallet.cpp b/src/Core/MulticoreWallet.cpp
+--- a/src/Core/MulticoreWallet.cpp
++++ b/src/Core/MulticoreWallet.cpp
+@@ -13,9 +13,74 @@
+ 
+ using namespace cn;
+ 
++#if defined(__EMSCRIPTEN__) && !defined(bytecoin_WASM_WORKERS)
++
++#include <chrono>
++
++WalletPreparatorMulticore::WalletPreparatorMulticore(hardware::HardwareWallet *,
++    Wallet::OutputHandler &&o_handler, const SecretKey &view_secret_key,
++    std::function<bool(const PreparedWalletBlock &)> &&b_handler,
++    std::function<bool(const PreparedWalletTransaction &)> &&t_handler, std::function<void()> &&c_handler)
++    : m_o_handler(std::move(o_handler))
++    , m_view_secret_key(view_secret_key)
++    , b_handler(std::move(b_handler))
++    , t_handler(std::move(t_handler))
++    , c_handler(std::move(c_handler))
++    , timer(std::bind(&WalletPreparatorMulticore::on_timer, this)) {}
++
++void WalletPreparatorMulticore::add_work(std::vector<api::cnd::SyncBlocks::RawBlockCompact> &&new_work) {
++	for (auto &&b : new_work) {
++		total_block_size += b.header.transactions_size;
++		work.push_back(WorkItem{});
++		work.back().block.raw_block = std::move(b);
++	}
++	if (!timer.is_set())
++		timer.once(0);
++}
++
++void WalletPreparatorMulticore::add_work(const Hash &tid, size_t size, TransactionPrefix &&new_work) {
++	total_mempool_count += 1;
++	work.push_back(WorkItem{});
++	work.back().is_tx     = true;
++	work.back().pwtx.tid  = tid;
++	work.back().pwtx.size = size;
++	work.back().pwtx.tx   = std::move(new_work);
++	if (!timer.is_set())
++		timer.once(0);
++}
++
++void WalletPreparatorMulticore::on_timer() {
++	const auto start = std::chrono::steady_clock::now();
++	while (!work.empty()) {
++		auto &w = work.front();
++		if (w.is_tx) {
++			w.pwtx.prepare(m_o_handler, m_view_secret_key);
++			if (!t_handler(w.pwtx)) {
++				c_handler();
++				return;  // retried when new work arrives
++			}
++			total_mempool_count -= 1;
++		} else {
++			w.block.prepare(m_o_handler, m_view_secret_key);
++			if (!b_handler(w.block)) {
++				c_handler();
++				return;  // retried when new work arrives
++			}
++			total_block_size -= w.block.raw_block.header.transactions_size;
++		}
++		work.pop_front();
++		if (std::chrono::steady_clock::now() - start > std::chrono::milliseconds(50))
++			break;
++	}
++	c_handler();
++	if (!work.empty())
++		timer.once(0);
++}
++
++#elif defined(__EMSCRIPTEN__)
+-#ifdef __EMSCRIPTEN__
+ 
++#include <emscripten/em_asm.h>
++#include <map>
+-#include <thread>  // for hardware concurency
+ #include "crypto/crypto.hpp"
+ #include "crypto/crypto_helpers.hpp"
+ 
+@@ -66,6 +131,18 @@
+ }
+ }  // namespace seria
+ 
++#ifdef bytecoin_WASM_WORKER_MODULE
++// Exports of walletworker.wasm. walletworker-main.js calls them with a message from the page
++// and the result is posted back to the page, which forwards it to walletd.
++static void worker_respond(const BinaryArray &ba) {
++	// clang-format off
++	EM_ASM({
++		var d = HEAPU8.slice($0, $0 + $1);
++		postMessage({ result: d }, [d.buffer]);
++	}, ba.data(), ba.size());
++	// clang-format on
++}
++
+ extern "C" EMSCRIPTEN_KEEPALIVE void worker_block_prepare(const void *data, size_t size) {
+ 	//	std::cout << "worker_block_prepare" << size << std::endl;
+ 	WPMessageBlock msg;
+@@ -80,9 +157,7 @@
+ 		    key_output.public_key, key_output.encrypted_secret, output_shared_secret);
+ 	};
+ 	msg.block.prepare(handler, msg.view_secret_key);
++	worker_respond(seria::to_binary(msg));
+-	auto ba = seria::to_binary(msg);
+-	//	std::cout << "emscripten_worker_respond" << size << std::endl;
+-	emscripten_worker_respond(reinterpret_cast<char *>(ba.data()), ba.size());
+ }
+ 
+ extern "C" EMSCRIPTEN_KEEPALIVE void worker_transaction_prepare(const void *data, size_t size) {
+@@ -99,10 +174,23 @@
+ 		    key_output.public_key, key_output.encrypted_secret, output_shared_secret);
+ 	};
+ 	msg.tx.prepare(handler, msg.view_secret_key);
++	worker_respond(seria::to_binary(msg));
++}
++#else
++static std::map<int, WalletPreparatorMulticore *> preparators;
++static int next_preparator_id = 1;
++
++// Called by walletd-worker.js with a result the page received from one of its walletworker instances.
++extern "C" EMSCRIPTEN_KEEPALIVE void walletd_pool_result(int preparator_id, int is_tx, const char *data, int size) {
++	auto it = preparators.find(preparator_id);
++	if (it == preparators.end())
++		return;  // wallet was closed meanwhile
++	if (is_tx)
++		it->second->on_transaction_prepared(data, static_cast<size_t>(size));
++	else
++		it->second->on_block_prepared(data, static_cast<size_t>(size));
+-	auto ba = seria::to_binary(msg);
+-	//	std::cout << "emscripten_transaction_respond" << size << std::endl;
+-	emscripten_worker_respond(reinterpret_cast<char *>(ba.data()), ba.size());
+ }
++#endif
+ 
+ WalletPreparatorMulticore::WalletPreparatorMulticore(hardware::HardwareWallet *hw_copy,
+     Wallet::OutputHandler &&o_handler, const SecretKey &view_secret_key,
+@@ -114,19 +202,35 @@
+     , t_handler(std::move(t_handler))
+     , c_handler(std::move(c_handler)) {
+ 	m_inv_view_secret_key = crypto::sc_invert(m_view_secret_key);
++	// Without pthreads std::thread::hardware_concurrency() is 1 in WebAssembly, ask the browser instead
++	const int cores = EM_ASM_INT({ return (self.navigator && self.navigator.hardwareConcurrency) || 2; });
++	auto th_count   = std::min<size_t>(8, std::max<size_t>(2, static_cast<size_t>(cores)));
+-	auto th_count         = std::max<size_t>(2, std::thread::hardware_concurrency());
+ 	std::cout << "Starting " << th_count << " workers for wallet processing" << std::endl;
+ 	workers.resize(th_count);
++#ifndef bytecoin_WASM_WORKER_MODULE
++	m_id              = next_preparator_id++;
++	preparators[m_id] = this;
++	EM_ASM({ postMessage({op : 'pool_start', id : $0, count : $1}); }, m_id, th_count);
++#endif
+-	for (auto &w : workers)
+-		w.handle = emscripten_create_worker("walletworker.js");
+ }
+ 
+ WalletPreparatorMulticore::~WalletPreparatorMulticore() {
++#ifndef bytecoin_WASM_WORKER_MODULE
++	preparators.erase(m_id);
++	EM_ASM({ postMessage({op : 'pool_stop', id : $0}); }, m_id);
++#endif
+-	for (auto &w : workers)
+-		emscripten_destroy_worker(w.handle);
+ 	workers.clear();
+ }
+ 
++static void post_to_pool(int id, size_t worker, bool is_tx, const BinaryArray &ba) {
++	// clang-format off
++	EM_ASM({
++		var d = HEAPU8.slice($2, $2 + $3);
++		postMessage({ op: 'pool_call', id: $0, worker: $1, tx: $4, data: d }, [d.buffer]);
++	}, id, worker, ba.data(), ba.size(), is_tx ? 1 : 0);
++	// clang-format on
++}
++
+ void WalletPreparatorMulticore::add_work(std::vector<api::cnd::SyncBlocks::RawBlockCompact> &&new_work) {
+ 	for (auto &&b : new_work) {
+ 		total_block_size += b.header.transactions_size;
+@@ -174,11 +278,7 @@
+ 			msg.inv_view_secret_key = m_inv_view_secret_key;
+ 			msg.is_amethyst         = is_amethyst;
+ 			msg.worker_num          = least_i;
++			post_to_pool(m_id, least_i, true, seria::to_binary(msg));
+-			auto ba                 = seria::to_binary(msg);
+-			//			std::cout << "emscripten_call_worker transaction " << ba.size() << std::endl;
+-			emscripten_call_worker(workers.at(least_i).handle, "worker_transaction_prepare",
+-			    reinterpret_cast<char *>(ba.data()), ba.size(),
+-			    &WalletPreparatorMulticore::on_transaction_prepared_handler, reinterpret_cast<void *>(this));
+ 		} else {
+ 			WPMessageBlock msg;
+ 			msg.block               = sent_work.back().block;
+@@ -186,11 +286,7 @@
+ 			msg.inv_view_secret_key = m_inv_view_secret_key;
+ 			msg.is_amethyst         = is_amethyst;
+ 			msg.worker_num          = least_i;
++			post_to_pool(m_id, least_i, false, seria::to_binary(msg));
+-			auto ba                 = seria::to_binary(msg);
+-			//			std::cout << "emscripten_call_worker block " << ba.size() << std::endl;
+-			emscripten_call_worker(workers.at(least_i).handle, "worker_block_prepare",
+-			    reinterpret_cast<char *>(ba.data()), ba.size(), &WalletPreparatorMulticore::on_block_prepared_handler,
+-			    reinterpret_cast<void *>(this));
+ 		}
+ 	}
+ }
+@@ -216,15 +312,6 @@
+ 	}
+ 	c_handler();
+ 	send_work();
+-}
+-
+-void WalletPreparatorMulticore::on_block_prepared_handler(char *data, int size, void *arg) {
+-	//	std::cout << "on_block_prepared_handler " << size << std::endl;
+-	reinterpret_cast<WalletPreparatorMulticore *>(arg)->on_block_prepared(data, static_cast<size_t>(size));
+-}
+-void WalletPreparatorMulticore::on_transaction_prepared_handler(char *data, int size, void *arg) {
+-	//	std::cout << "on_transaction_prepared_handler " << size << std::endl;
+-	reinterpret_cast<WalletPreparatorMulticore *>(arg)->on_transaction_prepared(data, static_cast<size_t>(size));
+ }
+ 
+ void WalletPreparatorMulticore::on_block_prepared(const char *data, size_t size) {
+diff --git a/src/Core/MulticoreWallet.hpp b/src/Core/MulticoreWallet.hpp
+--- a/src/Core/MulticoreWallet.hpp
++++ b/src/Core/MulticoreWallet.hpp
+@@ -15,17 +15,62 @@
+ // Without making any critical part of the Core multithreaded
+ // We do it by confining threads to "boxes"
+ 
++#if defined(__EMSCRIPTEN__) && !defined(bytecoin_WASM_WORKERS)
++
++// Single-threaded WebAssembly build: outputs are prepared on the walletd thread itself,
++// in slices of ~50 ms scheduled by a zero timer, so HTTP requests are served between slices.
++// Works for both amethyst and legacy wallets (the worker variant below supports amethyst only).
++#include <deque>
++#include "platform/Network.hpp"
++
++namespace cn {
++
++class WalletPreparatorMulticore {
++	struct WorkItem {
++		bool is_tx = false;
++		PreparedWalletTransaction pwtx;
++		PreparedWalletBlock block;
++	};
++	std::deque<WorkItem> work;
++	size_t total_block_size    = 0;
++	size_t total_mempool_count = 0;
++
++	Wallet::OutputHandler m_o_handler;
++	SecretKey m_view_secret_key;
++	std::function<bool(const PreparedWalletBlock &)> b_handler;
++	std::function<bool(const PreparedWalletTransaction &)> t_handler;
++	std::function<void()> c_handler;
++	platform::Timer timer;
++	void on_timer();
++
++public:
++	WalletPreparatorMulticore(hardware::HardwareWallet *hw_copy, Wallet::OutputHandler &&o_handler,
++	    const SecretKey &view_secret_key, std::function<bool(const PreparedWalletBlock &)> &&b_handler,
++	    std::function<bool(const PreparedWalletTransaction &)> &&t_handler, std::function<void()> &&c_handler);
++	void add_work(std::vector<api::cnd::SyncBlocks::RawBlockCompact> &&new_work);
++	void add_work(const Hash &tid, size_t size, TransactionPrefix &&new_work);
++	bool is_wallet_connected() { return true; }
++	void wallet_reconnected() {}
++	size_t get_total_block_size() const { return total_block_size; }
++	size_t get_total_mempool_count() const { return total_mempool_count; }
++};
++
++}  // namespace cn
++
++#elif defined(__EMSCRIPTEN__)
+-#ifdef __EMSCRIPTEN__
+ 
+ #include <emscripten/emscripten.h>
+ 
+ namespace cn {
+ 
++// The worker pool lives in the page, not in walletd's own Web Worker: nested workers are missing in older
++// Safari and some embedded browsers. walletd posts {op:'pool_call'} messages to the page, the page runs
++// walletworker instances and returns results through walletd_pool_result().
+ class WalletPreparatorMulticore {
+ 	struct Worker {
+-		worker_handle handle{};
+ 		size_t total_work_size = 0;
+ 	};
++	int m_id = 0;  // results of a closed wallet's preparator are ignored
+ 	std::vector<Worker> workers;
+ 
+ 	struct WorkItem {
+@@ -53,12 +98,10 @@
+ 	void send_work();
+ 	void broadcast_received_work();
+ 
++public:
+-	static void on_block_prepared_handler(char *data, int size, void *arg);
+-	static void on_transaction_prepared_handler(char *data, int size, void *arg);
+ 	void on_block_prepared(const char *data, size_t size);
+ 	void on_transaction_prepared(const char *data, size_t size);
+ 
+-public:
+ 	WalletPreparatorMulticore(hardware::HardwareWallet *hw_copy, Wallet::OutputHandler &&o_handler,
+ 	    const SecretKey &view_secret_key, std::function<bool(const PreparedWalletBlock &)> &&b_handler,
+ 	    std::function<bool(const PreparedWalletTransaction &)> &&t_handler, std::function<void()> &&c_handler);
+diff --git a/src/Core/WalletHD.hpp b/src/Core/WalletHD.hpp
+--- a/src/Core/WalletHD.hpp
++++ b/src/Core/WalletHD.hpp
+@@ -89,6 +89,9 @@
+ 	    Timestamp creation_timestamp, const std::string &mnemonic_password);
+ 	void ser_members(seria::ISeria &s);
+ 	std::string save_json_data() const;
++	// WalletHDBase::export_keys() is a TODO; this wallet keeps its mnemonic, so get_wallet_info can return it
++	// (empty for view-only wallets)
++	std::string export_keys() const override { return m_mnemonic; }
+ };
+ 
+ }  // namespace cn
+diff --git a/src/Core/WalletNodeExt.cpp b/src/Core/WalletNodeExt.cpp
+--- a/src/Core/WalletNodeExt.cpp
++++ b/src/Core/WalletNodeExt.cpp
+@@ -19,6 +19,134 @@
+ 
+ using namespace cn;
+ 
++#ifdef __EMSCRIPTEN__
++#include <cstring>
++#include "common/StringTools.hpp"
++#include "crypto/chacha.hpp"
++#include "crypto/crypto.hpp"
++extern "C" {
++#include "hmac/hmac_sha2.h"
++}
++
++void pkcs5_pbkdf2_hmac_sha512(const uint8_t *pass, size_t passlen, const uint8_t *salt, size_t saltlen, size_t iter,
++    size_t keylen, uint8_t *out);  // common/BIPs.cpp
++
++// Wallet file in IndexedDB holds the mnemonic. With a non-empty password (PIN) it is stored as
++// "bcnwallet2" | salt[16] | iv[8] | ChaCha20(json) | HMAC-SHA256(everything before | storage name)
++// with keys from PBKDF2-HMAC-SHA512(password, salt, 250000). The MAC covers the IndexedDB key the file
++// is stored under, so a file copied into another wallet's slot does not open.
++// "bcnwallet1" (100000 iterations, MAC without the name) is still read and rewritten as v2 on open.
++// Files without a magic are plain JSON (oldest builds).
++namespace {
++struct WalletFileFormat {
++	const char *magic;
++	size_t iterations;
++	bool mac_covers_name;
++};
++const WalletFileFormat WALLET_FILE_V1{"bcnwallet1", 100000, false};
++const WalletFileFormat WALLET_FILE_V2{"bcnwallet2", 250000, true};
++const WalletFileFormat &WALLET_FILE_CURRENT = WALLET_FILE_V2;
++const size_t MAGIC_SIZE = 10, SALT_SIZE = 16, IV_SIZE = 8, MAC_SIZE = 32;
++
++struct WalletFileKeys {
++	crypto::chacha_key enc;
++	uint8_t mac[32]{};
++	WalletFileKeys(const std::string &password, const uint8_t *salt, size_t iterations) {
++		uint8_t out[64]{};
++		pkcs5_pbkdf2_hmac_sha512(reinterpret_cast<const uint8_t *>(password.data()), password.size(), salt,
++		    SALT_SIZE, iterations, 64, out);
++		memcpy(enc.data, out, 32);
++		memcpy(mac, out + 32, 32);
++		memset(out, 0, sizeof(out));
++	}
++	~WalletFileKeys() { memset(mac, 0, sizeof(mac)); }
++};
++
++void wallet_file_mac(const WalletFileFormat &format, const WalletFileKeys &keys, const std::string &data,
++    size_t signed_size, const std::string &storage_name, uint8_t *mac) {
++	std::string message = data.substr(0, signed_size);
++	if (format.mac_covers_name)
++		message += storage_name;
++	hmac_sha256(keys.mac, 32, reinterpret_cast<const uint8_t *>(message.data()), static_cast<unsigned>(message.size()),
++	    mac, MAC_SIZE);
++}
++
++std::string encrypt_wallet_file(const std::string &json, const std::string &password, const std::string &storage_name) {
++	if (password.empty())
++		return json;
++	const WalletFileFormat &format = WALLET_FILE_CURRENT;
++	uint8_t salt[SALT_SIZE];
++	crypto::chacha_iv iv;
++	crypto::generate_random_bytes(salt, sizeof(salt));
++	crypto::generate_random_bytes(iv.data, sizeof(iv.data));
++	WalletFileKeys keys(password, salt, format.iterations);
++	std::string result = format.magic;
++	result.append(reinterpret_cast<const char *>(salt), SALT_SIZE);
++	result.append(reinterpret_cast<const char *>(iv.data), IV_SIZE);
++	const size_t body = result.size();
++	result.resize(body + json.size());
++	crypto::chacha(20, json.data(), json.size(), keys.enc, iv, &result[body]);
++	uint8_t mac[MAC_SIZE];
++	wallet_file_mac(format, keys, result, result.size(), storage_name, mac);
++	result.append(reinterpret_cast<const char *>(mac), MAC_SIZE);
++	return result;
++}
++
++// nullptr for a plain JSON file
++const WalletFileFormat *wallet_file_format(const std::string &data) {
++	for (const WalletFileFormat *f : {&WALLET_FILE_V1, &WALLET_FILE_V2})
++		if (common::starts_with(data, f->magic))
++			return f;
++	return nullptr;
++}
++
++// Returns false on wrong password, damaged file or a file stored under another name.
++bool decrypt_wallet_file(const WalletFileFormat &format, const std::string &data, const std::string &password,
++    const std::string &storage_name, std::string *json) {
++	const size_t header = MAGIC_SIZE + SALT_SIZE + IV_SIZE;
++	if (data.size() < header + MAC_SIZE)
++		return false;
++	const auto *salt = reinterpret_cast<const uint8_t *>(data.data()) + MAGIC_SIZE;
++	crypto::chacha_iv iv;
++	memcpy(iv.data, salt + SALT_SIZE, IV_SIZE);
++	WalletFileKeys keys(password, salt, format.iterations);
++	const size_t signed_size = data.size() - MAC_SIZE;
++	uint8_t mac[MAC_SIZE];
++	wallet_file_mac(format, keys, data, signed_size, storage_name, mac);
++	uint8_t diff = 0;
++	for (size_t i = 0; i != MAC_SIZE; ++i)
++		diff |= mac[i] ^ static_cast<uint8_t>(data[signed_size + i]);
++	if (diff != 0)
++		return false;
++	json->resize(signed_size - header);
++	crypto::chacha(20, data.data() + header, json->size(), keys.enc, iv, &(*json)[0]);
++	return true;
++}
++}  // namespace
++
++void WalletNodeExt::save_wallet_file(std::function<void()> &&on_saved) {
++	auto *wallet_json = dynamic_cast<WalletHDJson *>(wallet.get());
++	if (!wallet_json)
++		return;
++	const std::string storage_name = wallet->get_cache_name() + ".wallet.memory";
++	m_wallet_file_data = encrypt_wallet_file(wallet_json->save_json_data(), m_wallet_password, storage_name);
++	wallet_save_op     = std::make_unique<platform::AsyncIndexDBOperation>(
++        storage_name, m_wallet_file_data.data(), m_wallet_file_data.size(), std::move(on_saved));
++}
++
++void WalletNodeExt::write_ext_error(
++    int code, const std::string &message, const http::RequestBody &raw_request, const json_rpc::Request &raw_js_request) {
++	if (!ext_who)
++		return;
++	http::ResponseBody last_http_response(raw_request.r);
++	last_http_response.r.headers.push_back({"Content-Type", "application/json; charset=utf-8"});
++	last_http_response.r.status = 200;
++	last_http_response.set_body(
++	    json_rpc::create_error_response_body(json_rpc::Error(code, message), raw_js_request));
++	http::Server::write(ext_who, std::move(last_http_response));
++}
++#endif
++
+ WalletNodeExt::~WalletNodeExt() = default;  // we have unique_ptr to incomplete type
+ 
+ void WalletNodeExt::close_wallet() {
+@@ -28,6 +156,8 @@
+ 	wallet.reset();
+ #ifdef __EMSCRIPTEN__
+ 	wallet_file_op.reset();
++	wallet_save_op.reset();
++	m_wallet_password.clear();
+ #else
+ 	walletcache_lock.reset();
+ #endif
+@@ -129,11 +259,10 @@
+ 	auto wallet_hd = std::make_unique<WalletHDJson>(
+ 	    m_currency, m_log.get_logger(), request.mnemonic, request.creation_timestamp, request.mnemonic_password);
+ 	wallet_hd->create_look_ahead_records(request.address_count);
++	wallet            = std::move(wallet_hd);
++	m_wallet_password = request.wallet_password;
++	save_wallet_file([]() { std::cout << "on_ext_create_wallet wallet saved" << std::endl; });
++	ext_who = who;
+-	auto json_data = wallet_hd->save_json_data();
+-	wallet         = std::move(wallet_hd);
+-	wallet_file_op = std::make_unique<platform::AsyncIndexDBOperation>(wallet->get_cache_name() + ".wallet.memory",
+-	    json_data.data(), json_data.size(), [=]() { std::cout << "on_ext_create_wallet wallet saved" << std::endl; });
+-	ext_who        = who;
+ 	open_wallet_cache(raw_request, raw_js_request);
+ 	return false;
+ #else
+@@ -199,9 +328,37 @@
+ 	wallet_file_op =
+ 	    std::make_unique<platform::AsyncIndexDBOperation>(request.wallet_file, [=](const char *data, size_t size) {
+ 		    std::cout << "on_ext_open_wallet wallet loaded size=" << size << std::endl;
++		    bool migrate = false;
+ 		    if (data) {
++			    std::string file_data(data, size);
++			    std::string json_data;
++			    if (const WalletFileFormat *format = wallet_file_format(file_data)) {
++				    if (!decrypt_wallet_file(
++				            *format, file_data, request.wallet_password, request.wallet_file, &json_data)) {
++					    write_ext_error(api::WALLET_FILE_DECRYPT_ERROR, "Wrong PIN or damaged wallet file", raw_request,
++					        raw_js_request);
++					    return;
++				    }
++				    migrate = format != &WALLET_FILE_CURRENT;  // older format, rewrite with more iterations
++			    } else {
++				    json_data = std::move(file_data);
++				    migrate   = !request.wallet_password.empty();  // old plain file, encrypt it now
++			    }
++			    try {
++				    wallet = std::make_unique<WalletHDJson>(m_currency, m_log.get_logger(), json_data);
++			    } catch (const std::exception &ex) {
++				    write_ext_error(api::WALLET_FILE_DECRYPT_ERROR, common::what(ex), raw_request, raw_js_request);
++				    return;
++			    }
++			    m_wallet_password = request.wallet_password;
++		    }
++		    if (migrate) {
++			    // open_wallet_cache() replaces wallet_file_op only after the cache is loaded, so save first
++			    save_wallet_file([=]() {
++				    std::cout << "on_ext_open_wallet wallet file encrypted" << std::endl;
++				    open_wallet_cache(raw_request, raw_js_request);
++			    });
++			    return;
+-			    std::string json_data(data, size);
+-			    wallet = std::make_unique<WalletHDJson>(m_currency, m_log.get_logger(), json_data);
+ 		    }
+ 		    open_wallet_cache(raw_request, raw_js_request);
+ 	    });
+@@ -251,7 +408,12 @@
+ bool WalletNodeExt::on_ext_set_password(http::Client *, http::RequestBody &&, json_rpc::Request &&,
+     api::walletd::ExtSetPassword::Request &&request, api::walletd::ExtSetPassword::Response &) {
+ 	check_wallet_open();
++#ifdef __EMSCRIPTEN__
++	m_wallet_password = request.wallet_password;
++	save_wallet_file([]() { std::cout << "on_ext_set_password wallet file saved" << std::endl; });
++#else
+ 	wallet->set_password(request.wallet_password);
++#endif
+ 	m_log(logging::INFO) << "Successfully set new password";
+ 	return true;
+ }
+diff --git a/src/Core/WalletNodeExt.hpp b/src/Core/WalletNodeExt.hpp
+--- a/src/Core/WalletNodeExt.hpp
++++ b/src/Core/WalletNodeExt.hpp
+@@ -33,6 +33,12 @@
+ private:
+ #ifdef __EMSCRIPTEN__
+ 	std::unique_ptr<platform::AsyncIndexDBOperation> wallet_file_op;
++	std::string m_wallet_password;   // PIN of the open wallet, the wallet file is encrypted with it
++	std::unique_ptr<platform::AsyncIndexDBOperation> wallet_save_op;  // separate, saves may start in load callback
++	std::string m_wallet_file_data;  // must stay alive while wallet_save_op writes it
++	void save_wallet_file(std::function<void()> &&on_saved);
++	void write_ext_error(int code, const std::string &message, const http::RequestBody &raw_request,
++	    const json_rpc::Request &raw_js_request);
+ #else
+ 	std::unique_ptr<platform::ExclusiveLock> walletcache_lock;
+ #endif
+diff --git a/src/Core/WalletSync.cpp b/src/Core/WalletSync.cpp
+--- a/src/Core/WalletSync.cpp
++++ b/src/Core/WalletSync.cpp
+@@ -164,8 +164,9 @@
+ 	if (preparator.get_total_mempool_count() != 0) {
+ 		return;  // Wait for preparator queue to drain
+ 	}
++	if (!m_mempool_unavailable &&
++	    (m_last_node_status.top_block_hash != m_last_syncpool_status.top_block_hash ||
++	        m_last_node_status.transaction_pool_version != m_last_syncpool_status.transaction_pool_version)) {
+-	if (m_last_node_status.top_block_hash != m_last_syncpool_status.top_block_hash ||
+-	    m_last_node_status.transaction_pool_version != m_last_syncpool_status.transaction_pool_version) {
+ 		send_sync_pool();
+ 		return;
+ 	}
+@@ -199,6 +200,14 @@
+ 		    if (!json_rpc::parse_binary_response(response.body, resp, error)) {
+ 			    m_log(logging::INFO) << "SyncMemPool request RPC error code=" << error.code
+ 			                         << " message=" << error.message;
++			    if (error.message.find("Authorization Required") != std::string::npos) {
++				    // Public nodes (node01/node02.bytecoin.org) serve blocks and accept transactions, but keep
++				    // the memory pool to themselves. Stop asking: incoming payments show up once in a block.
++				    m_log(logging::INFO) << "Node does not share its memory pool, unconfirmed transactions will not be seen";
++				    m_mempool_unavailable = true;
++				    set_sync_error(std::string{}, true);
++				    return;
++			    }
+ 			    set_sync_error(error.code == json_rpc::METHOD_NOT_FOUND ? "INCOMPATIBLE_DAEMON_VERSION"
+ 			                                                            : "CONNECTION_HTTP_FAILED");
+ 			    return;
+diff --git a/src/Core/WalletSync.hpp b/src/Core/WalletSync.hpp
+--- a/src/Core/WalletSync.hpp
++++ b/src/Core/WalletSync.hpp
+@@ -38,6 +38,7 @@
+ 	api::cnd::GetStatus::Response m_last_node_status;
+ 	api::cnd::GetStatus::Response m_last_syncpool_status;
+ 	bool last_static_sync_blocks_failed = false;
++	bool m_mempool_unavailable          = false;  // public node refuses sync_mem_pool, wallet sees only blocks
+ 	std::string m_sync_error;
+ 	void set_sync_error(const std::string &str, bool immediate_sync = false);
+ 
+diff --git a/src/main_wasm.cpp b/src/main_wasm.cpp
+new file mode 100644
+--- /dev/null
++++ b/src/main_wasm.cpp
+@@ -0,0 +1,54 @@
++// Copyright (c) 2012-2018, The CryptoNote developers, The Bytecoin developers.
++// Licensed under the GNU Lesser General Public License. See LICENSE for details.
++
++// walletd for the browser (WebAssembly). The equivalent of `walletd --app`:
++// no wallet is opened at start, the page creates or opens one through ext_create_wallet / ext_open_wallet.
++// JSON RPC requests come from JavaScript through Module.worker_http_request (see http/Server.cpp),
++// the node is reached with fetch() at --bytecoind-remote-address, wallet and cache live in IndexedDB.
++
++#include <emscripten/bind.h>
++#include <emscripten/emscripten.h>
++#include <iostream>
++#include "Core/Config.hpp"
++#include "Core/Currency.hpp"
++#include "Core/WalletNodeExt.hpp"
++#include "common/BIPs.hpp"
++#include "common/CommandLine.hpp"
++#include "common/exception.hpp"
++#include "logging/ConsoleLogger.hpp"
++#include "version.hpp"
++
++using namespace cn;
++
++// walletd has no RPC for a new mnemonic (the CLI has --create-mnemonic), so the page gets one from here.
++static std::string create_mnemonic() { return Bip32Key::create_random_bip39_mnemonic(256); }
++static std::string check_mnemonic(std::string mnemonic) {
++	try {
++		return Bip32Key::check_bip39_mnemonic(mnemonic);
++	} catch (const std::exception &) {
++		return std::string{};
++	}
++}
++
++EMSCRIPTEN_BINDINGS(walletd_wasm) {
++	emscripten::function("create_mnemonic", &create_mnemonic);
++	emscripten::function("check_mnemonic", &check_mnemonic);
++}
++
++int main(int argc, const char *argv[]) try {
++	// Everything must outlive main(): the runtime keeps running and calls back into these objects.
++	static common::CommandLine cmd(argc, argv);
++	static Config config(cmd);
++	// The wallet cache is an in-memory DB saved whole to IndexedDB on each commit. A browser tab or a phone app
++	// can be closed at any moment, so commit far more often than desktop walletd (111 s).
++	config.db_commit_period_wallet_cache = 15;
++	static Currency currency(config);
++	static logging::ConsoleLogger logger;
++	static WalletNodeExt wallet_node(config, currency, logger);
++	std::cout << "walletd " << cn::app_version() << " (wasm) ready, node " << config.bytecoind_remote_ip << ":"
++	          << config.bytecoind_remote_port << std::endl;
++	return 0;
++} catch (const std::exception &ex) {
++	std::cout << "walletd (wasm) failed to start - " << common::what(ex) << std::endl;
++	return 1;
++}
+-- 
+2.43.0
+
