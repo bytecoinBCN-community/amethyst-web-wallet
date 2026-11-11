@@ -48,7 +48,7 @@ Any static HTTPS hosting works: the files in the repository root are the whole s
 | `index.html`, `app.js` | The page: create or restore, PIN, lock, balance, sync, address, send with confirmation, history, backup, node choice |
 | `walletd-worker.js`, `walletd.js`, `walletd.wasm` | walletd in a Web Worker |
 | `walletworker-main.js`, `walletworker.js`, `walletworker.wasm` | Output scanning workers |
-| `sw.js`, `manifest.webmanifest`, `icon*` | Installable app (PWA); the app shell works offline, node requests are never cached |
+| `sw.js`, `manifest.webmanifest`, `icon*`, `favicon*`, `apple-touch-icon.png` | Installable app (PWA); the app shell works offline, node requests are never cached |
 | `_headers`, `.nojekyll` | Hosting settings |
 | `build/` | Reproducible build: `build.sh`, `emcc_build.sh`, `patches/` |
 | `tools/serve.py` | Local server with an optional node proxy |

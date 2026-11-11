@@ -2,11 +2,11 @@
 // Network first, cache as fallback: an online start always gets the latest files.
 // Node requests (/json_rpc, /binary_rpc, /sync_blocks/) and anything not GET are never cached.
 'use strict';
-const CACHE = 'amethyst-web-wallet-v4';
+const CACHE = 'amethyst-web-wallet-v5';
 const SHELL = [
   './', 'index.html', 'app.js', 'manifest.webmanifest', 'walletd-worker.js',
   'walletd.js', 'walletd.wasm', 'walletworker-main.js', 'walletworker.js', 'walletworker.wasm',
-  'icon.svg', 'icon-192.png', 'icon-512.png',
+  'favicon.ico', 'favicon-32.png', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png',
 ];
 const NODE_PATHS = ['/json_rpc', '/binary_rpc', '/sync_blocks/'];
 
