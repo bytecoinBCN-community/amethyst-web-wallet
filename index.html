@@ -188,8 +188,9 @@
     <div class="label">Node</div>
     <p id="node-cur" class="sub mono" style="margin:0 0 8px">searching…</p>
     <select id="node-sel">
-      <option value="auto">Auto: this site → node01 → node02</option>
+      <option value="auto">Auto: this site → community node → node01 → node02</option>
       <option value="self">This site (proxy to its own node)</option>
+      <option value="https://node.bytecoin.community:443">node.bytecoin.community (community)</option>
       <option value="https://node01.bytecoin.org:8091">node01.bytecoin.org</option>
       <option value="https://node02.bytecoin.org:8091">node02.bytecoin.org</option>
       <option value="custom">Custom address…</option>
@@ -198,8 +199,9 @@
     <button id="btn-node" class="secondary">Apply (the wallet will be locked)</button>
     <p id="node-msg" class="warn"></p>
     <p class="sub" style="margin:0">The node sees which blocks and transactions the wallet requests and your IP address, but not your keys.
-      The public node01/node02 are run by the Bytecoin developers and allow CORS, so they work directly from the browser,
-      but they do not share their pool of unconfirmed transactions: an incoming payment appears once it is in a block (≈2 min).</p>
+      node.bytecoin.community is run by the Bytecoin community; node01/node02 are run by the original Bytecoin developers.
+      All three allow CORS, so they work directly from the browser. node01/node02 do not share their pool of unconfirmed
+      transactions: through them an incoming payment appears once it is in a block (≈2 min).</p>
   </div>
 
   <div class="card">

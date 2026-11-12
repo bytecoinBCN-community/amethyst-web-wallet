@@ -9,7 +9,7 @@ A light Bytecoin (BCN) wallet that runs entirely in the browser, on a phone or a
 - `walletd.wasm` is Bytecoin `walletd` v3.5.1 built with Emscripten from public sources plus one patch ([build/patches](build/patches)). It creates and restores *amethyst* (BIP39, 24 words) wallets, scans blocks with your view key, and builds and signs transactions on the device.
 - `walletworker.wasm` finds the wallet's outputs in blocks. The page runs one copy per CPU core (2–8).
 - The node only serves blocks (`sync_blocks`), decoy outputs and accepts finished transactions. It never sees keys or the mnemonic. Outputs are checked locally, so the node is not trusted with balances.
-- By default the page checks this site's own `/json_rpc` proxy (if any), `node01.bytecoin.org` and `node02.bytecoin.org` in parallel, and uses the first one that answers and is not behind. The public nodes allow cross-origin requests, so **the site itself can be plain static hosting**. You can pick a node or enter your own (`https://host:port`) in the *Node* card.
+- By default the page checks this site's own `/json_rpc` proxy (if any), the community node `node.bytecoin.community`, `node01.bytecoin.org` and `node02.bytecoin.org` in parallel, and uses the first one that answers and is not behind. The public nodes allow cross-origin requests, so **the site itself can be plain static hosting**. You can pick a node or enter your own (`https://host:port`) in the *Node* card.
 - The public nodes do not share their memory pool, so an incoming payment appears with its first confirmation (≈2 min), not earlier.
 
 ## Security

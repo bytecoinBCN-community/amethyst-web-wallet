@@ -66,7 +66,8 @@ function poolMessage(m) {
 
 // ---- Node: this site's proxy or a public node with CORS, checked before walletd starts ----
 const NODE_KEY = 'bcn-light-wallet-node';  // "auto", "self" or a node address
-const PUBLIC_NODES = ['https://node01.bytecoin.org:8091', 'https://node02.bytecoin.org:8091'];
+// The community node first; the original developers' nodes stay as fallbacks.
+const PUBLIC_NODES = ['https://node.bytecoin.community:443', 'https://node01.bytecoin.org:8091', 'https://node02.bytecoin.org:8091'];
 
 // User input → address walletd accepts: "https://host:port" (port is required), "host:port" for plain http
 // (local nodes only). Returns null for anything else.
@@ -101,7 +102,7 @@ async function probeNode(node, timeoutMs) {
   }
 }
 
-// "auto": first node in order this site → node01 → node02 (all checked at once) that answers and is not
+// "auto": first node in order this site → node.bytecoin.community → node01 → node02 (all checked at once) that answers and is not
 // behind the others by more than a few blocks, so a stalled node is skipped.
 async function chooseNode() {
   const pref = localStorage.getItem(NODE_KEY) || 'auto';
