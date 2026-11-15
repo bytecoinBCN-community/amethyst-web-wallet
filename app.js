@@ -17,6 +17,7 @@ function fmt(atomic) {
 }
 function post(msg) {
   return new Promise((resolve, reject) => {
+    if (!worker) return reject(new Error('the wallet engine is not running in this browser'));
     const id = nextId++;
     pending.set(id, { resolve, reject });
     worker.postMessage(Object.assign({ id }, msg));
@@ -43,7 +44,7 @@ function poolMessage(m) {
     pool.workers.forEach((w) => w.terminate());
     pool = { id: m.id, workers: [] };
     for (let i = 0; i < m.count; i++) {
-      const w = new Worker('walletworker-main.js');
+      const w = new Worker('walletworker-main.js' + (LEGACY ? '?legacy=1' : ''));
       const id = m.id;
       w.onmessage = (e) => {
         if (e.data.log !== undefined) return log(e.data.log);
@@ -146,8 +147,27 @@ $('btn-node').onclick = async () => {
   location.reload();
 };
 
+// walletd.wasm is built with -fwasm-exceptions, which older browsers (SeaMonkey, Firefox < 100, Chrome < 95,
+// Safari < 15.2) cannot compile. They get the legacy/ build instead: same code, C++ exceptions done in JS, slower.
+// This tiny module (one type, one tag) is valid only where WebAssembly exception handling exists.
+const HAS_WASM = typeof WebAssembly === 'object';
+const WASM_EH = (function () {
+  try {
+    return HAS_WASM && WebAssembly.validate(new Uint8Array([0, 97, 115, 109, 1, 0, 0, 0, 1, 4, 1, 96, 0, 0, 13, 3, 1, 0, 0]));
+  } catch (e) { return false; }
+})();
+// ?engine=legacy forces the legacy build (for testing it in a current browser)
+const LEGACY = HAS_WASM && (!WASM_EH || /[?&]engine=legacy(&|$)/.test(location.search)) ? '&legacy=1' : '';
+
 function startWorker(choice) {
-  worker = new Worker('walletd-worker.js?node=' + encodeURIComponent(choice.node));
+  if (!HAS_WASM) {
+    $('engine').textContent = 'not supported';
+    $('old-browser').classList.remove('hidden');
+    log('This browser has no WebAssembly; the wallet engine cannot start.');
+    return;
+  }
+  if (LEGACY) log('This browser has no WebAssembly exception handling: using the slower legacy engine.');
+  worker = new Worker('walletd-worker.js?node=' + encodeURIComponent(choice.node) + LEGACY);
   $('node-cur').textContent = nodeLabel(choice.node) + ' · ' + choice.note;
   worker.onmessage = (e) => {
     const m = e.data;
@@ -487,8 +507,11 @@ function parseAmount(text) {
   const s = text.replace(/[\s ]/g, '').replace(',', '.');
   const m = /^(\d+)(?:\.(\d{0,8}))?$/.exec(s);
   if (!m) return null;
-  const atomic = BigInt(m[1]) * 100000000n + BigInt((m[2] || '').padEnd(8, '0'));
-  return atomic > 0n && atomic <= BigInt(Number.MAX_SAFE_INTEGER) ? Number(atomic) : null;
+  // digits of the atomic amount as a string (no BigInt: older engines such as SeaMonkey's lack it)
+  const digits = (m[1] + (m[2] || '').padEnd(8, '0')).replace(/^0+/, '');
+  const max = String(Number.MAX_SAFE_INTEGER);
+  if (!digits || digits.length > max.length || (digits.length === max.length && digits > max)) return null;
+  return Number(digits);
 }
 function rpcErrorText(err) {
   const known = err.code !== undefined && RPC_ERRORS[String(err.code)];

@@ -1,12 +1,20 @@
 #!/bin/bash
 # Runs inside emscripten/emsdk. Compiles walletd for the browser from /w/bytecoin into /w/out.
 # Every source is compiled into an archive; the linker then pulls in only what main_wasm.cpp needs.
+# LEGACY=1 builds the variant for browsers without WebAssembly exception handling (SeaMonkey, Firefox < 100,
+# Chrome < 95, Safari < 15.2) into /w/out-legacy: C++ exceptions done in JavaScript, plain MVP WebAssembly
+# and ES2017 glue. It is larger and slower; the page loads it only where the normal build cannot run.
 S=/w/bytecoin
-O=/w/obj
-mkdir -p $O /w/out
+if [ "${LEGACY:-0}" = 1 ]; then
+  O=/w/obj-legacy; OUT=/w/out-legacy; EH=-fexceptions
+  LEGACY_LINK="-sMIN_FIREFOX_VERSION=60 -sMIN_CHROME_VERSION=60 -sMIN_SAFARI_VERSION=110000 -sWASM_BIGINT=0"
+else
+  O=/w/obj; OUT=/w/out; EH=-fwasm-exceptions; LEGACY_LINK=
+fi
+mkdir -p $O $OUT
 # bytecoin_WASM_WORKERS: wallet outputs are prepared in walletworker.js Web Workers, one per CPU core.
 # Remove it for the single-threaded variant (no walletworker.js needed, but a full restore takes hours).
-export CFLAGS_COMMON="-O2 -fno-strict-aliasing -fwasm-exceptions -DNDEBUG=1 -DCRYPTONOTE_NAME=\"bytecoin\" -Dplatform_USE_SSL=1 \
+export CFLAGS_COMMON="-O2 -fno-strict-aliasing $EH -DNDEBUG=1 -DCRYPTONOTE_NAME=\"bytecoin\" -Dplatform_USE_SSL=1 \
  -Dbytecoin_WASM_WORKERS=1 \
  -DBOOST_BIND_NO_PLACEHOLDERS=1 -DBOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE=1 -DBOOST_ERROR_CODE_HEADER_ONLY=1 \
  -DBOOST_SYSTEM_NO_DEPRECATED=1 -DBOOST_DATE_TIME_NO_LIB=1 -DBOOST_SYSTEM_NO_LIB=1 -DBOOST_REGEX_NO_LIB=1 \
@@ -50,22 +58,22 @@ echo "objects: $(ls $O/*.o | wc -l) of $(wc -l < /w/sources.txt)"
 rm -f $O/libbcn.a
 emar rcs $O/libbcn.a $O/*.o
 em++ $CFLAGS_COMMON -std=c++17 -c src/main_wasm.cpp -o $O/main_wasm.o 2> $O/main_wasm.err || { echo "FAIL main_wasm"; head -40 $O/main_wasm.err; exit 1; }
-em++ -O2 -fwasm-exceptions $O/main_wasm.o $O/libbcn.a -o /w/out/walletd.js \
+em++ -O2 $EH $O/main_wasm.o $O/libbcn.a -o $OUT/walletd.js \
   -lembind -sFETCH=1 -sENVIRONMENT=worker -sALLOW_MEMORY_GROWTH=1 -sINITIAL_MEMORY=64MB -sSTACK_SIZE=1MB \
   -sEXPORTED_FUNCTIONS=_main,_malloc,_free,_walletd_pool_result -sEXPORTED_RUNTIME_METHODS=HEAPU8 \
-  -sEXIT_RUNTIME=0 -sERROR_ON_UNDEFINED_SYMBOLS=1 2> /w/link.err
+  -sEXIT_RUNTIME=0 $LEGACY_LINK -sERROR_ON_UNDEFINED_SYMBOLS=1 2> /w/link.err
 rc=$?
 grep -v '^$' /w/link.err | head -60
 [ $rc -ne 0 ] && exit $rc
 case "$CFLAGS_COMMON" in *bytecoin_WASM_WORKERS*)
   # Worker module: the page runs several of these (walletworker-main.js) and relays work from walletd
   em++ $CFLAGS_COMMON -std=c++17 -Dbytecoin_WASM_WORKER_MODULE=1 -c src/Core/MulticoreWallet.cpp -o $O/worker_module.o
-  em++ -O2 -fwasm-exceptions $O/worker_module.o $O/libbcn.a -o /w/out/walletworker.js -lembind \
+  em++ -O2 $EH $O/worker_module.o $O/libbcn.a -o $OUT/walletworker.js -lembind \
     -sEXPORTED_FUNCTIONS=_worker_block_prepare,_worker_transaction_prepare,_malloc,_free \
     -sEXPORTED_RUNTIME_METHODS=HEAPU8 \
-    -sENVIRONMENT=worker -sALLOW_MEMORY_GROWTH=1 -sINITIAL_MEMORY=32MB -sERROR_ON_UNDEFINED_SYMBOLS=1 2> /w/link2.err
+    -sENVIRONMENT=worker -sALLOW_MEMORY_GROWTH=1 -sINITIAL_MEMORY=32MB $LEGACY_LINK -sERROR_ON_UNDEFINED_SYMBOLS=1 2> /w/link2.err
   rc=$?
   grep -v '^$' /w/link2.err | head -40 ;;
 esac
-[ $rc -eq 0 ] && ls -la /w/out
+[ $rc -eq 0 ] && ls -la $OUT
 exit $rc

@@ -6,12 +6,16 @@
 'use strict';
 var https = self.location.protocol === 'https:';
 var port = self.location.port || (https ? '443' : '80');
-var nodeParam = new URL(self.location.href).searchParams.get('node') || 'self';
+var params = new URL(self.location.href).searchParams;
+var nodeParam = params.get('node') || 'self';
+// legacy=1: a browser without WebAssembly exception handling (SeaMonkey, Firefox < 100): the slower build in legacy/
+var engineDir = params.get('legacy') === '1' ? 'legacy/' : '';
 var nodeAddress = nodeParam !== 'self' ? nodeParam : (https ? 'https://' : '') + self.location.hostname + ':' + port;
 
 var Module = {
   // --secrets-via-api: get_wallet_info can return the mnemonic, the page shows it on the Backup screen after PIN
   arguments: ['--bytecoind-remote-address=' + nodeAddress, '--secrets-via-api'],
+  locateFile: function (path) { return engineDir + path; },
   print: function (t) { postMessage({ log: t }); },
   printErr: function (t) { postMessage({ log: t }); },
   postRun: [function () { postMessage({ ready: true, node: nodeAddress }); }],
@@ -36,4 +40,4 @@ onmessage = function (e) {
   }
 };
 
-importScripts('walletd.js');
+importScripts(engineDir + 'walletd.js');

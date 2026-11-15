@@ -8,6 +8,7 @@ A light Bytecoin (BCN) wallet that runs entirely in the browser, on a phone or a
 
 - `walletd.wasm` is Bytecoin `walletd` v3.5.1 built with Emscripten from public sources plus one patch ([build/patches](build/patches)). It creates and restores *amethyst* (BIP39, 24 words) wallets, scans blocks with your view key, and builds and signs transactions on the device.
 - `walletworker.wasm` finds the wallet's outputs in blocks. The page runs one copy per CPU core (2–8).
+- **Older browsers.** The normal build uses WebAssembly exception handling (Firefox 100+, Chrome/Edge 95+, Safari 15.2+). Where the page finds no such support (SeaMonkey, older Firefox ESR, Pale Moon and similar), it loads the same code from `legacy/`: built with C++ exceptions done in JavaScript, plain WebAssembly 1.0 and ES2017 glue. It is about 25% larger. `?engine=legacy` in the address forces it in any browser.
 - The node only serves blocks (`sync_blocks`), decoy outputs and accepts finished transactions. It never sees keys or the mnemonic. Outputs are checked locally, so the node is not trusted with balances.
 - By default the page checks this site's own `/json_rpc` proxy (if any), the community node `node.bytecoin.community`, `node01.bytecoin.org` and `node02.bytecoin.org` in parallel, and uses the first one that answers and is not behind. The public nodes allow cross-origin requests, so **the site itself can be plain static hosting**. You can pick a node or enter your own (`https://host:port`) in the *Node* card.
 - The public nodes do not share their memory pool, so an incoming payment appears with its first confirmation (≈2 min), not earlier.
@@ -20,7 +21,7 @@ A light Bytecoin (BCN) wallet that runs entirely in the browser, on a phone or a
 - The wallet cache (balance and history, no spend keys) is not encrypted.
 - Content-Security-Policy: scripts only from this site, no inline scripts; `unsafe-eval` is required by the Emscripten/embind glue.
 - The node you use sees your IP address and which blocks you ask for. Use your own node if that matters.
-- Not audited. Read the code; it is small: [`app.js`](app.js) (~580 lines) and the patch.
+- Not audited. Read the code; it is small: [`app.js`](app.js) (~600 lines) and the patch.
 
 ## Verify the binaries
 
@@ -31,7 +32,7 @@ build/build.sh
 sha256sum build/out/*
 ```
 
-compare with [`SHA256SUMS`](SHA256SUMS). The script clones [bytecoinBCN-community/bytecoin](https://github.com/bytecoinBCN-community/bytecoin) at tag `v3.5.1`, applies `build/patches/*.patch`, and compiles in Docker (`emscripten/emsdk:3.1.64`, Boost 1.83 headers from `ubuntu:24.04`). Needs git and Docker.
+compare with [`SHA256SUMS`](SHA256SUMS) (both the normal build and `legacy/`). The script clones [bytecoinBCN-community/bytecoin](https://github.com/bytecoinBCN-community/bytecoin) at tag `v3.5.1`, applies `build/patches/*.patch`, and compiles in Docker (`emscripten/emsdk:3.1.64`, Boost 1.83 headers from `ubuntu:24.04`). Needs git and Docker.
 
 ## Hosting
 
@@ -48,6 +49,7 @@ Any static HTTPS hosting works: the files in the repository root are the whole s
 | `index.html`, `app.js` | The page: create or restore, PIN, lock, balance, sync, address, send with confirmation, history, backup, node choice |
 | `walletd-worker.js`, `walletd.js`, `walletd.wasm` | walletd in a Web Worker |
 | `walletworker-main.js`, `walletworker.js`, `walletworker.wasm` | Output scanning workers |
+| `legacy/` | The same `walletd` and `walletworker` built for browsers without WebAssembly exception handling |
 | `sw.js`, `manifest.webmanifest`, `icon*`, `favicon*`, `apple-touch-icon.png` | Installable app (PWA); the app shell works offline, node requests are never cached |
 | `_headers`, `.nojekyll` | Hosting settings |
 | `build/` | Reproducible build: `build.sh`, `emcc_build.sh`, `patches/` |
@@ -57,7 +59,7 @@ Any static HTTPS hosting works: the files in the repository root are the whole s
 
 - One amethyst wallet per browser. Legacy (pre-2019) wallets are not supported.
 - A transaction not yet accepted by the node is kept in memory only: if the tab is closed before that, send it again.
-- Tested in Chromium. Safari/iOS and real sending with funds are not verified yet.
+- Tested in Chromium, both builds (the legacy one with `?engine=legacy`: create, sync, lock/unlock). Safari/iOS and real sending with funds are not verified yet.
 
 ## License
 
