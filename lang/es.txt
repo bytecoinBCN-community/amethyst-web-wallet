@@ -183,3 +183,15 @@ node.no_answer = El nodo no responde o no permite peticiones del navegador (CORS
 node.confirm_lock = El monedero se bloqueará y tendrá que introducir el PIN de nuevo. ¿Continuar?
 
 log.label = registro de walletd
+
+qr.show = Mostrar código QR
+qr.hide = Ocultar código QR
+qr.hint = Otro monedero puede escanear este código para obtener su dirección.
+scan.button = Escanear
+scan.hint = Apunte la cámara al código QR de la dirección.
+scan.cancel = Cerrar cámara
+scan.ok = Dirección leída del código QR. Compruébela e introduzca la cantidad.
+scan.not_address = Este código QR no es una dirección de Bytecoin.
+scan.denied = La cámara no está permitida para este sitio. Permítala en los ajustes del navegador o pegue la dirección.
+scan.no_camera = No se pudo iniciar la cámara: {error}
+scan.lib_failed = No se pudo cargar el lector de QR: {error}

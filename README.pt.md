@@ -14,6 +14,7 @@ Uma carteira leve de Bytecoin (BCN) que funciona inteiramente no navegador, no c
 - O nó só fornece blocos (`sync_blocks`) e saídas de despiste, e aceita transações prontas. Ele nunca vê as chaves nem a frase. As saídas são verificadas localmente, então o saldo não depende de confiar no nó.
 - Por padrão a página verifica em paralelo o proxy `/json_rpc` do próprio site (se houver), o nó da comunidade `node.bytecoin.community`, `node01.bytecoin.org` e `node02.bytecoin.org`, e usa o primeiro que responde e não está atrasado. Os nós públicos permitem requisições de outras origens, então **o site pode ser uma hospedagem estática simples**. No cartão *Nó* você pode escolher um nó ou informar o seu (`https://host:porta`).
 - Os nós públicos não compartilham o seu pool de transações não confirmadas, então um pagamento recebido aparece com a primeira confirmação (≈2 min), não antes.
+- **Códigos QR.** *Mostrar código QR* abaixo do endereço de recebimento desenha `bytecoin:<endereço>` (igual ao BCN Wallet para Windows) com `qr.js`, um pequeno codificador sem dependências. *Escanear* ao lado do campo do destinatário lê um código QR com a câmera: o Chrome no Android usa o seu `BarcodeDetector` embutido; os outros navegadores carregam `vendor/jsQR.js` ([jsQR](https://github.com/cozmo/jsQR) 1.4.0, Apache-2.0, ≈57 KB compactado) só quando você toca em *Escanear*. Do código só se aproveita o endereço, nunca um valor. A câmera funciona só enquanto o leitor está aberto, e o `Permissions-Policy` a permite apenas para este site.
 
 ## Idiomas
 
@@ -73,6 +74,7 @@ Qualquer hospedagem estática com HTTPS serve: os arquivos na raiz do repositór
 | --- | --- |
 | `index.html`, `app.js` | A página: criar ou restaurar, PIN, bloqueio, saldo, sincronização, endereço, envio com confirmação, histórico, backup, escolha do nó |
 | `i18n.js`, `lang/*.txt` | Idiomas da interface (8); `tools/check-lang.py` verifica os arquivos |
+| `qr.js`, `vendor/jsQR.js` | Código QR do endereço; leitor de QR para navegadores sem `BarcodeDetector` (jsQR 1.4.0 do npm, sha512 conferido; licença em `vendor/jsQR-LICENSE.txt`) |
 | `walletd-worker.js`, `walletd.js`, `walletd.wasm` | walletd num Web Worker |
 | `walletworker-main.js`, `walletworker.js`, `walletworker.wasm` | Workers que procuram as saídas |
 | `legacy/` | Os mesmos `walletd` e `walletworker` compilados para navegadores sem tratamento de exceções do WebAssembly |

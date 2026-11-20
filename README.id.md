@@ -14,6 +14,7 @@ Dompet Bytecoin (BCN) ringan yang sepenuhnya berjalan di peramban, di ponsel mau
 - Node hanya menyajikan blok (`sync_blocks`) dan output pengecoh, serta menerima transaksi yang sudah jadi. Node tidak pernah melihat kunci atau frasa. Output diperiksa secara lokal, jadi saldo tidak bergantung pada kepercayaan pada node.
 - Secara bawaan halaman memeriksa secara paralel proxy `/json_rpc` milik situs ini (jika ada), node komunitas `node.bytecoin.community`, `node01.bytecoin.org` dan `node02.bytecoin.org`, lalu memakai yang pertama menjawab dan tidak tertinggal. Node publik mengizinkan permintaan lintas asal, jadi **situs ini cukup berupa hosting statis biasa**. Di kartu *Node* Anda bisa memilih node atau mengisi node sendiri (`https://host:port`).
 - Node publik tidak membagikan kumpulan transaksi yang belum dikonfirmasi, jadi pembayaran masuk muncul dengan konfirmasi pertamanya (≈2 menit), tidak lebih awal.
+- **Kode QR.** *Tampilkan kode QR* di bawah alamat penerimaan menggambar `bytecoin:<alamat>` (sama seperti BCN Wallet untuk Windows) dengan `qr.js`, encoder kecil tanpa dependensi. *Pindai* di samping kolom penerima membaca kode QR dengan kamera: Chrome di Android memakai `BarcodeDetector` bawaannya; peramban lain memuat `vendor/jsQR.js` ([jsQR](https://github.com/cozmo/jsQR) 1.4.0, Apache-2.0, ≈57 KB terkompresi) hanya saat Anda mengetuk *Pindai*. Dari kode hanya alamat yang diambil, tidak pernah jumlah. Kamera hanya menyala selama pemindai terbuka, dan `Permissions-Policy` mengizinkannya hanya untuk situs ini.
 
 ## Bahasa
 
@@ -73,6 +74,7 @@ Hosting statis apa pun dengan HTTPS bisa dipakai: berkas di root repositori adal
 | --- | --- |
 | `index.html`, `app.js` | Halaman: buat atau pulihkan, PIN, kunci, saldo, sinkronisasi, alamat, kirim dengan konfirmasi, riwayat, cadangan, pilihan node |
 | `i18n.js`, `lang/*.txt` | Bahasa antarmuka (8); `tools/check-lang.py` memeriksa berkasnya |
+| `qr.js`, `vendor/jsQR.js` | Kode QR alamat; pembaca QR untuk peramban tanpa `BarcodeDetector` (jsQR 1.4.0 dari npm, sha512 diperiksa; lisensi di `vendor/jsQR-LICENSE.txt`) |
 | `walletd-worker.js`, `walletd.js`, `walletd.wasm` | walletd di dalam Web Worker |
 | `walletworker-main.js`, `walletworker.js`, `walletworker.wasm` | Worker pencari output |
 | `legacy/` | `walletd` dan `walletworker` yang sama, dibangun untuk peramban tanpa penanganan eksepsi WebAssembly |

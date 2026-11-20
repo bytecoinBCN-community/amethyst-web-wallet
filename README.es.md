@@ -14,6 +14,7 @@ Un monedero ligero de Bytecoin (BCN) que funciona por completo en el navegador, 
 - El nodo solo entrega bloques (`sync_blocks`) y salidas señuelo, y acepta transacciones ya terminadas. Nunca ve las claves ni la frase. Las salidas se comprueban localmente, así que el saldo no depende de la confianza en el nodo.
 - Por defecto la página comprueba en paralelo el proxy `/json_rpc` del propio sitio (si existe), el nodo de la comunidad `node.bytecoin.community`, `node01.bytecoin.org` y `node02.bytecoin.org`, y usa el primero que responde y no va retrasado. Los nodos públicos permiten peticiones desde otros orígenes, así que **el sitio puede ser un simple alojamiento estático**. En la tarjeta *Nodo* puede elegir un nodo o escribir el suyo (`https://host:puerto`).
 - Los nodos públicos no comparten su conjunto de transacciones sin confirmar, así que un pago entrante aparece con su primera confirmación (≈2 min), no antes.
+- **Códigos QR.** *Mostrar código QR* bajo la dirección de recepción dibuja `bytecoin:<dirección>` (igual que BCN Wallet para Windows) con `qr.js`, un pequeño codificador sin dependencias. *Escanear* junto al campo del destinatario lee un código QR con la cámara: Chrome en Android usa su `BarcodeDetector` integrado; los demás navegadores cargan `vendor/jsQR.js` ([jsQR](https://github.com/cozmo/jsQR) 1.4.0, Apache-2.0, ≈57 KB comprimido) solo al pulsar *Escanear*. Del código solo se toma la dirección, nunca una cantidad. La cámara funciona solo mientras el escáner está abierto, y `Permissions-Policy` la permite solo para este sitio.
 
 ## Idiomas
 
@@ -73,6 +74,7 @@ Sirve cualquier alojamiento estático con HTTPS: los archivos de la raíz del re
 | --- | --- |
 | `index.html`, `app.js` | La página: crear o restaurar, PIN, bloqueo, saldo, sincronización, dirección, envío con confirmación, historial, copia, elección de nodo |
 | `i18n.js`, `lang/*.txt` | Idiomas de la interfaz (8); `tools/check-lang.py` comprueba los archivos |
+| `qr.js`, `vendor/jsQR.js` | Código QR de la dirección; lector de QR para navegadores sin `BarcodeDetector` (jsQR 1.4.0 de npm, sha512 comprobado; licencia en `vendor/jsQR-LICENSE.txt`) |
 | `walletd-worker.js`, `walletd.js`, `walletd.wasm` | walletd en un Web Worker |
 | `walletworker-main.js`, `walletworker.js`, `walletworker.wasm` | Workers que buscan las salidas |
 | `legacy/` | Los mismos `walletd` y `walletworker` compilados para navegadores sin manejo de excepciones de WebAssembly |

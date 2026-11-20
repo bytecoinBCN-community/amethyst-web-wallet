@@ -183,3 +183,15 @@ node.no_answer = Düğüm yanıt vermiyor veya tarayıcı isteklerine izin vermi
 node.confirm_lock = Cüzdan kilitlenecek; PIN'i yeniden girmeniz gerekecek. Devam edilsin mi?
 
 log.label = walletd günlüğü
+
+qr.show = QR kodunu göster
+qr.hide = QR kodunu gizle
+qr.hint = Başka bir cüzdan adresinizi almak için bu kodu tarayabilir.
+scan.button = Tara
+scan.hint = Kamerayı adresin QR koduna tutun.
+scan.cancel = Kamerayı kapat
+scan.ok = Adres QR kodundan okundu. Kontrol edin, ardından tutarı girin.
+scan.not_address = Bu QR kodu bir Bytecoin adresi değil.
+scan.denied = Bu site için kameraya izin verilmedi. Tarayıcı ayarlarından izin verin veya adresi yapıştırın.
+scan.no_camera = Kamera başlatılamadı: {error}
+scan.lib_failed = QR okuyucu yüklenemedi: {error}

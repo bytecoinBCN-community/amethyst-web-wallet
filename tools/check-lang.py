@@ -36,7 +36,7 @@ for f in sorted((root / 'lang').glob('*.txt')):
 src = (root / 'index.html').read_text(encoding='utf-8') + (root / 'app.js').read_text(encoding='utf-8')
 used = set(re.findall(r'data-i18n(?:-placeholder|-title)?="([^"]+)"', src))
 used |= set(re.findall(r"""\bt\('([a-z_]+\.[\w.-]+)'""", src))
-used |= set(re.findall(r"""'(node\.note_\w+|install\.\w+)'""", src))
+used |= set(re.findall(r"""'(node\.note_\w+|install\.\w+|qr\.\w+)'""", src))
 used |= {'engine.' + e for e in ('loading', 'finding', 'unsupported', 'error')}
 used |= {'sync.synced', 'sync.scanning'}
 used |= {'desktop.' + c for c in re.findall(r"'(\w+)'", re.search(r'DESKTOP_ERRORS = \[([^\]]*)\]', src).group(1))}

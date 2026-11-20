@@ -183,3 +183,15 @@ node.no_answer = 节点无响应或不允许浏览器请求（CORS）。
 node.confirm_lock = 钱包将被锁定，您需要重新输入 PIN。继续吗？
 
 log.label = walletd 日志
+
+qr.show = 显示二维码
+qr.hide = 隐藏二维码
+qr.hint = 其他钱包可以扫描此二维码获取您的地址。
+scan.button = 扫码
+scan.hint = 将摄像头对准地址的二维码。
+scan.cancel = 关闭摄像头
+scan.ok = 已从二维码读取地址。请核对后输入金额。
+scan.not_address = 此二维码不是 Bytecoin 地址。
+scan.denied = 本站未获准使用摄像头。请在浏览器设置中允许，或直接粘贴地址。
+scan.no_camera = 无法启动摄像头：{error}
+scan.lib_failed = 无法加载二维码读取器：{error}

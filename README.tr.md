@@ -14,6 +14,7 @@ Tamamen tarayıcıda, telefonda veya bilgisayarda çalışan hafif bir Bytecoin 
 - Düğüm yalnızca blokları (`sync_blocks`) ve tuzak çıktıları sunar ve hazır işlemleri kabul eder. Anahtarları veya ifadeyi asla görmez. Çıktılar yerel olarak kontrol edilir, bu yüzden bakiye konusunda düğüme güvenmek gerekmez.
 - Varsayılan olarak sayfa, sitenin kendi `/json_rpc` proxy'sini (varsa), topluluk düğümü `node.bytecoin.community`, `node01.bytecoin.org` ve `node02.bytecoin.org` düğümlerini paralel kontrol eder ve yanıt veren, geride olmayan ilk düğümü kullanır. Herkese açık düğümler başka kökenlerden gelen isteklere izin verir, bu yüzden **site basit bir statik barındırma olabilir**. *Düğüm* kartında bir düğüm seçebilir veya kendinizinkini (`https://host:port`) girebilirsiniz.
 - Herkese açık düğümler onaylanmamış işlem havuzlarını paylaşmaz, bu yüzden gelen bir ödeme ilk onayıyla (≈2 dk) görünür, daha önce değil.
+- **QR kodları.** Alma adresinin altındaki *QR kodunu göster*, `bytecoin:<adres>` kodunu (Windows için BCN Wallet ile aynı) bağımlılıksız küçük bir kodlayıcı olan `qr.js` ile çizer. Alıcı alanının yanındaki *Tara*, kamerayla QR kodu okur: Android'deki Chrome yerleşik `BarcodeDetector`'ı kullanır; diğer tarayıcılar `vendor/jsQR.js` dosyasını ([jsQR](https://github.com/cozmo/jsQR) 1.4.0, Apache-2.0, sıkıştırılmış ≈57 KB) yalnızca *Tara*'ya dokunduğunuzda yükler. Koddan yalnızca adres alınır, tutar asla alınmaz. Kamera yalnızca tarayıcı açıkken çalışır ve `Permissions-Policy` ona yalnızca bu site için izin verir.
 
 ## Diller
 
@@ -73,6 +74,7 @@ HTTPS'li her statik barındırma çalışır: depo kökündeki dosyalar sitenin 
 | --- | --- |
 | `index.html`, `app.js` | Sayfa: oluşturma veya geri yükleme, PIN, kilit, bakiye, eşitleme, adres, onaylı gönderim, geçmiş, yedek, düğüm seçimi |
 | `i18n.js`, `lang/*.txt` | Arayüz dilleri (8); `tools/check-lang.py` dosyaları kontrol eder |
+| `qr.js`, `vendor/jsQR.js` | Adresin QR kodu; `BarcodeDetector` olmayan tarayıcılar için QR okuyucu (npm'den jsQR 1.4.0, sha512 doğrulandı; lisans `vendor/jsQR-LICENSE.txt` içinde) |
 | `walletd-worker.js`, `walletd.js`, `walletd.wasm` | Web Worker içinde walletd |
 | `walletworker-main.js`, `walletworker.js`, `walletworker.wasm` | Çıktıları arayan worker'lar |
 | `legacy/` | WebAssembly istisna işlemesi olmayan tarayıcılar için derlenmiş aynı `walletd` ve `walletworker` |

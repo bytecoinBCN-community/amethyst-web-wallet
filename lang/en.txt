@@ -184,3 +184,15 @@ node.no_answer = The node does not answer or does not allow browser requests (CO
 node.confirm_lock = The wallet will be locked; you will need to enter the PIN again. Continue?
 
 log.label = walletd log
+
+qr.show = Show QR code
+qr.hide = Hide QR code
+qr.hint = Another wallet can scan this code to get your address.
+scan.button = Scan
+scan.hint = Point the camera at the QR code of the address.
+scan.cancel = Close camera
+scan.ok = Address read from the QR code. Check it, then enter the amount.
+scan.not_address = This QR code is not a Bytecoin address.
+scan.denied = The camera is not allowed for this site. Allow it in the browser settings, or paste the address.
+scan.no_camera = Could not start the camera: {error}
+scan.lib_failed = Could not load the QR reader: {error}

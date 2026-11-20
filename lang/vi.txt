@@ -183,3 +183,15 @@ node.no_answer = Nút không trả lời hoặc không cho phép yêu cầu từ
 node.confirm_lock = Ví sẽ bị khóa; bạn sẽ phải nhập lại PIN. Tiếp tục?
 
 log.label = nhật ký walletd
+
+qr.show = Hiện mã QR
+qr.hide = Ẩn mã QR
+qr.hint = Ví khác có thể quét mã này để lấy địa chỉ của bạn.
+scan.button = Quét
+scan.hint = Hướng camera vào mã QR của địa chỉ.
+scan.cancel = Đóng camera
+scan.ok = Đã đọc địa chỉ từ mã QR. Hãy kiểm tra rồi nhập số tiền.
+scan.not_address = Mã QR này không phải địa chỉ Bytecoin.
+scan.denied = Trang này chưa được phép dùng camera. Hãy cho phép trong cài đặt trình duyệt, hoặc dán địa chỉ.
+scan.no_camera = Không bật được camera: {error}
+scan.lib_failed = Không tải được bộ đọc QR: {error}

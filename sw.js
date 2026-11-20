@@ -2,9 +2,9 @@
 // Network first, cache as fallback: an online start always gets the latest files.
 // Node requests (/json_rpc, /binary_rpc, /sync_blocks/) and anything not GET are never cached.
 'use strict';
-const CACHE = 'amethyst-web-wallet-v23';
+const CACHE = 'amethyst-web-wallet-v24';
 const SHELL = [
-  './', 'index.html', 'i18n.js', 'app.js', 'manifest.webmanifest', 'walletd-worker.js',
+  './', 'index.html', 'i18n.js', 'qr.js', 'app.js', 'manifest.webmanifest', 'walletd-worker.js',
   'lang/en.txt', 'lang/uk.txt', 'lang/es.txt', 'lang/pt.txt', 'lang/tr.txt', 'lang/id.txt', 'lang/vi.txt', 'lang/zh.txt',
   'walletd.js', 'walletd.wasm', 'walletworker-main.js', 'walletworker.js', 'walletworker.wasm',
   'favicon.ico', 'favicon-32.png', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png',

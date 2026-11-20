@@ -329,6 +329,22 @@ $('btn-pin-set').onclick = async () => {
 
 $('btn-copy').onclick = () => navigator.clipboard && navigator.clipboard.writeText($('addr').textContent);
 
+// ---- QR code of the receiving address: "bytecoin:<address>", the same as BCN Wallet for Windows shows ----
+function setQrButton(shown) {
+  const b = $('btn-qr');
+  b.setAttribute('data-i18n', shown ? 'qr.hide' : 'qr.show');
+  b.textContent = t(shown ? 'qr.hide' : 'qr.show');
+}
+$('btn-qr').onclick = () => {
+  const box = $('qr-box'), addr = $('addr').textContent;
+  if (!box.classList.contains('hidden') || !ADDRESS_RE.test(addr)) { box.classList.add('hidden'); return setQrButton(false); }
+  $('qr-img').textContent = '';
+  $('qr-img').append(QR.svg('bytecoin:' + addr));
+  box.classList.remove('hidden');
+  setQrButton(true);
+};
+function hideQr() { $('qr-box').classList.add('hidden'); $('qr-img').textContent = ''; setQrButton(false); }
+
 async function closeWallet() {
   clearInterval(pollTimer);
   pinCheck = null;
@@ -338,6 +354,8 @@ async function closeWallet() {
   $('pinchange').classList.add('hidden');
   $('export').classList.add('hidden');
   $('sec-msg').textContent = '';
+  hideQr();
+  stopScan();
   try { await rpc('ext_close_wallet'); } catch (err) { log(err.message); }
   scanning = false;
   updateWakeLock();
@@ -756,6 +774,95 @@ function resetSend(clear) {
 ['send-to', 'send-amount'].forEach((id) => $(id).addEventListener('input', () => {
   if ($('send-msg').className === 'warn') sendMsg('');
 }));
+// ---- Scan the recipient's QR code with the camera ----
+// The browser's own BarcodeDetector where it reads QR (Chrome on Android): nothing to load. Elsewhere (Safari,
+// Firefox, SeaMonkey) vendor/jsQR.js (jsQR 1.4.0, Apache-2.0, ≈57 KB compressed), loaded only now.
+// Accepts a plain address or "bytecoin:<address>[?…]"; the amount is never taken from a QR code.
+let scanStream = null, scanTimer = null, scanDetector = null, scanCanvas = null, scanBad = '';
+if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) $('btn-scan').classList.remove('hidden');
+function loadJsQR() {
+  if (window.jsQR) return Promise.resolve();
+  return new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = 'vendor/jsQR.js';
+    s.onload = () => (window.jsQR ? resolve() : reject(new Error('jsQR missing')));
+    s.onerror = () => reject(new Error('vendor/jsQR.js'));
+    document.head.append(s);
+  });
+}
+function scannedAddress(text) {
+  const m = /^bytecoin:([^?#]*)/i.exec(text.trim());
+  return (m ? m[1] : text).trim();
+}
+function stopScan() {
+  clearTimeout(scanTimer);
+  scanTimer = null;
+  if (scanStream) scanStream.getTracks().forEach((tr) => tr.stop());
+  scanStream = null;
+  $('scan-video').srcObject = null;
+  $('scan-box').classList.add('hidden');
+}
+async function scanFrame() {
+  if (!scanStream) return;
+  const v = $('scan-video');
+  let text = null;
+  try {
+    if (v.readyState >= 2 && v.videoWidth) {
+      if (scanDetector) {
+        const codes = await scanDetector.detect(v);
+        if (codes.length) text = codes[0].rawValue;
+      } else {
+        const k = Math.min(1, 640 / Math.max(v.videoWidth, v.videoHeight));
+        const w = Math.round(v.videoWidth * k), h = Math.round(v.videoHeight * k);
+        if (!scanCanvas) scanCanvas = document.createElement('canvas');
+        scanCanvas.width = w; scanCanvas.height = h;
+        const ctx = scanCanvas.getContext('2d');
+        ctx.drawImage(v, 0, 0, w, h);
+        const r = window.jsQR(ctx.getImageData(0, 0, w, h).data, w, h, { inversionAttempts: 'attemptBoth' });
+        if (r) text = r.data;
+      }
+    }
+  } catch (err) { log('scan: ' + err.message); }
+  if (text !== null) {
+    const addr = scannedAddress(text);
+    if (ADDRESS_RE.test(addr)) {
+      stopScan();
+      $('send-to').value = addr;
+      log('scan: address read from a QR code');
+      return sendMsg(t('scan.ok'));
+    }
+    if (text !== scanBad) { scanBad = text; sendMsg(t('scan.not_address'), true); }
+  }
+  if (scanStream) scanTimer = setTimeout(scanFrame, 150);
+}
+$('btn-scan').onclick = async () => {
+  if (scanStream) return stopScan();
+  sendMsg('');
+  scanBad = '';
+  try {
+    scanStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' } }, audio: false });
+  } catch (err) {
+    scanStream = null;
+    return sendMsg(err.name === 'NotAllowedError' || err.name === 'SecurityError' ? t('scan.denied') : t('scan.no_camera', { error: err.message }), true);
+  }
+  const v = $('scan-video');
+  v.srcObject = scanStream;
+  $('scan-box').classList.remove('hidden');
+  v.play().catch(() => {});
+  scanDetector = null;
+  try {
+    if ('BarcodeDetector' in window && (await BarcodeDetector.getSupportedFormats()).indexOf('qr_code') >= 0)
+      scanDetector = new BarcodeDetector({ formats: ['qr_code'] });
+  } catch (err) { scanDetector = null; }
+  if (!scanDetector) {
+    try { await loadJsQR(); } catch (err) { stopScan(); return sendMsg(t('scan.lib_failed', { error: err.message }), true); }
+  }
+  log('scan: camera on, decoder ' + (scanDetector ? 'BarcodeDetector' : 'jsQR'));
+  scanFrame();
+};
+$('btn-scan-cancel').onclick = stopScan;
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') stopScan(); });
+
 $('btn-max').onclick = () => {
   $('send-amount').value = (spendable / ATOMIC).toFixed(8).replace(/\.?0+$/, '');
   $('send-subtract').checked = true;

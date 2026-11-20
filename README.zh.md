@@ -14,6 +14,7 @@
 - 节点只提供区块（`sync_blocks`）和混淆用的输出，并接收已完成的交易。它永远看不到密钥或助记词。输出在本地校验，因此余额无需信任节点。
 - 默认情况下，页面会并行检查本站自己的 `/json_rpc` 代理（如有）、社区节点 `node.bytecoin.community`、`node01.bytecoin.org` 和 `node02.bytecoin.org`，并使用第一个有响应且不落后的节点。公共节点允许跨域请求，因此**网站本身只需普通的静态托管**。您可以在“节点”卡片中选择节点或填写自己的节点（`https://host:port`）。
 - 公共节点不共享未确认交易池，因此收到的付款会在第一次确认时（约 2 分钟）显示，不会更早。
+- **二维码。** 收款地址下方的*显示二维码*用 `qr.js`（一个无依赖的小型编码器）绘制 `bytecoin:<地址>`（与 Windows 版 BCN Wallet 相同）。收款人输入框旁的*扫码*用摄像头读取二维码：Android 上的 Chrome 使用内置的 `BarcodeDetector`；其他浏览器只在点按*扫码*时才加载 `vendor/jsQR.js`（[jsQR](https://github.com/cozmo/jsQR) 1.4.0，Apache-2.0，压缩后约 57 KB）。只从二维码中读取地址，从不读取金额。摄像头只在扫码界面打开时工作，`Permissions-Policy` 只允许本站使用摄像头。
 
 ## 语言
 
@@ -73,6 +74,7 @@ sha256sum build/out/*
 | --- | --- |
 | `index.html`、`app.js` | 页面：创建或恢复、PIN、锁定、余额、同步、地址、带确认的发送、历史、备份、节点选择 |
 | `i18n.js`、`lang/*.txt` | 界面语言（8 种）；`tools/check-lang.py` 检查这些文件 |
+| `qr.js`、`vendor/jsQR.js` | 地址的二维码；供不支持 `BarcodeDetector` 的浏览器使用的二维码读取器（来自 npm 的 jsQR 1.4.0，已校验 sha512；许可证见 `vendor/jsQR-LICENSE.txt`） |
 | `walletd-worker.js`、`walletd.js`、`walletd.wasm` | 在 Web Worker 中运行的 walletd |
 | `walletworker-main.js`、`walletworker.js`、`walletworker.wasm` | 查找输出的 worker |
 | `legacy/` | 为不支持 WebAssembly 异常处理的浏览器构建的相同 `walletd` 和 `walletworker` |

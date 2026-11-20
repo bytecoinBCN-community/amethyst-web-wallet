@@ -183,3 +183,15 @@ node.no_answer = Node tidak menjawab atau tidak mengizinkan permintaan dari pera
 node.confirm_lock = Dompet akan dikunci; Anda perlu memasukkan PIN lagi. Lanjutkan?
 
 log.label = log walletd
+
+qr.show = Tampilkan kode QR
+qr.hide = Sembunyikan kode QR
+qr.hint = Dompet lain dapat memindai kode ini untuk mendapatkan alamat Anda.
+scan.button = Pindai
+scan.hint = Arahkan kamera ke kode QR alamat.
+scan.cancel = Tutup kamera
+scan.ok = Alamat terbaca dari kode QR. Periksa alamatnya, lalu isi jumlahnya.
+scan.not_address = Kode QR ini bukan alamat Bytecoin.
+scan.denied = Kamera tidak diizinkan untuk situs ini. Izinkan di pengaturan peramban, atau tempel alamatnya.
+scan.no_camera = Tidak dapat menyalakan kamera: {error}
+scan.lib_failed = Tidak dapat memuat pembaca QR: {error}

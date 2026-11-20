@@ -14,6 +14,7 @@ Ví Bytecoin (BCN) nhẹ chạy hoàn toàn trong trình duyệt, trên điện 
 - Nút chỉ cung cấp khối (`sync_blocks`), các đầu ra mồi và nhận giao dịch đã hoàn tất. Nút không bao giờ thấy khóa hay cụm từ. Các đầu ra được kiểm tra ngay tại máy, nên số dư không phụ thuộc vào việc tin nút.
 - Mặc định trang kiểm tra song song proxy `/json_rpc` của chính trang (nếu có), nút cộng đồng `node.bytecoin.community`, `node01.bytecoin.org` và `node02.bytecoin.org`, rồi dùng nút đầu tiên trả lời và không bị chậm. Các nút công khai cho phép yêu cầu từ nguồn khác, nên **trang web chỉ cần là hosting tĩnh đơn giản**. Trong thẻ *Nút* bạn có thể chọn nút hoặc nhập nút của riêng mình (`https://host:port`).
 - Các nút công khai không chia sẻ nhóm giao dịch chưa xác nhận, nên khoản thanh toán đến chỉ hiện khi có xác nhận đầu tiên (≈2 phút), không sớm hơn.
+- **Mã QR.** *Hiện mã QR* dưới địa chỉ nhận vẽ `bytecoin:<địa chỉ>` (giống BCN Wallet cho Windows) bằng `qr.js`, một bộ mã hóa nhỏ không phụ thuộc thư viện nào. *Quét* cạnh ô người nhận đọc mã QR bằng camera: Chrome trên Android dùng `BarcodeDetector` có sẵn; các trình duyệt khác chỉ tải `vendor/jsQR.js` ([jsQR](https://github.com/cozmo/jsQR) 1.4.0, Apache-2.0, ≈57 KB sau nén) khi bạn chạm *Quét*. Từ mã chỉ lấy địa chỉ, không bao giờ lấy số tiền. Camera chỉ chạy khi bộ quét đang mở, và `Permissions-Policy` chỉ cho phép camera với trang này.
 
 ## Ngôn ngữ
 
@@ -73,6 +74,7 @@ Mọi hosting tĩnh có HTTPS đều dùng được: các tệp ở thư mục g
 | --- | --- |
 | `index.html`, `app.js` | Trang: tạo hoặc khôi phục, PIN, khóa, số dư, đồng bộ, địa chỉ, gửi có xác nhận, lịch sử, sao lưu, chọn nút |
 | `i18n.js`, `lang/*.txt` | Ngôn ngữ giao diện (8); `tools/check-lang.py` kiểm tra các tệp |
+| `qr.js`, `vendor/jsQR.js` | Mã QR của địa chỉ; bộ đọc QR cho trình duyệt không có `BarcodeDetector` (jsQR 1.4.0 từ npm, đã kiểm tra sha512; giấy phép trong `vendor/jsQR-LICENSE.txt`) |
 | `walletd-worker.js`, `walletd.js`, `walletd.wasm` | walletd trong Web Worker |
 | `walletworker-main.js`, `walletworker.js`, `walletworker.wasm` | Các worker tìm đầu ra |
 | `legacy/` | Cùng `walletd` và `walletworker`, biên dịch cho trình duyệt không có xử lý ngoại lệ WebAssembly |

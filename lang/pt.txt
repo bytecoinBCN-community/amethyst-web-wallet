@@ -183,3 +183,15 @@ node.no_answer = O nó não responde ou não permite requisições do navegador 
 node.confirm_lock = A carteira será bloqueada e será preciso digitar o PIN de novo. Continuar?
 
 log.label = registro do walletd
+
+qr.show = Mostrar código QR
+qr.hide = Ocultar código QR
+qr.hint = Outra carteira pode escanear este código para obter o seu endereço.
+scan.button = Escanear
+scan.hint = Aponte a câmera para o código QR do endereço.
+scan.cancel = Fechar câmera
+scan.ok = Endereço lido do código QR. Confira-o e informe o valor.
+scan.not_address = Este código QR não é um endereço Bytecoin.
+scan.denied = A câmera não está permitida para este site. Permita-a nas configurações do navegador ou cole o endereço.
+scan.no_camera = Não foi possível ligar a câmera: {error}
+scan.lib_failed = Não foi possível carregar o leitor de QR: {error}

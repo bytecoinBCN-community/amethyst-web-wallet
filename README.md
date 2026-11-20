@@ -14,6 +14,7 @@ A light Bytecoin (BCN) wallet that runs entirely in the browser, on a phone or a
 - The node only serves blocks (`sync_blocks`), decoy outputs and accepts finished transactions. It never sees keys or the mnemonic. Outputs are checked locally, so the node is not trusted with balances.
 - By default the page checks this site's own `/json_rpc` proxy (if any), the community node `node.bytecoin.community`, `node01.bytecoin.org` and `node02.bytecoin.org` in parallel, and uses the first one that answers and is not behind. The public nodes allow cross-origin requests, so **the site itself can be plain static hosting**. You can pick a node or enter your own (`https://host:port`) in the *Node* card.
 - The public nodes do not share their memory pool, so an incoming payment appears with its first confirmation (≈2 min), not earlier.
+- **QR codes.** *Show QR code* under the receiving address draws `bytecoin:<address>` (the same as BCN Wallet for Windows) with `qr.js`, a small encoder without dependencies. *Scan* next to the recipient field reads a QR code with the camera: Chrome on Android uses its built-in `BarcodeDetector`; other browsers load `vendor/jsQR.js` ([jsQR](https://github.com/cozmo/jsQR) 1.4.0, Apache-2.0, ≈57 KB compressed) only when you tap *Scan*. Only the address is taken from the code, never an amount. The camera runs only while the scanner is open, and `Permissions-Policy` allows it for this site only.
 
 ## Languages
 
@@ -73,6 +74,7 @@ Any static HTTPS hosting works: the files in the repository root are the whole s
 | --- | --- |
 | `index.html`, `app.js` | The page: create or restore, PIN, lock, balance, sync, address, send with confirmation, history, backup, node choice |
 | `i18n.js`, `lang/*.txt` | Interface languages (8); `tools/check-lang.py` checks the files |
+| `qr.js`, `vendor/jsQR.js` | QR code of the address; QR reader for browsers without `BarcodeDetector` (jsQR 1.4.0 from npm, sha512 checked; license in `vendor/jsQR-LICENSE.txt`) |
 | `walletd-worker.js`, `walletd.js`, `walletd.wasm` | walletd in a Web Worker |
 | `walletworker-main.js`, `walletworker.js`, `walletworker.wasm` | Output scanning workers |
 | `legacy/` | The same `walletd` and `walletworker` built for browsers without WebAssembly exception handling |
