@@ -1,0 +1,185 @@
+# Amethyst Web Wallet — Türkçe. Biçim: "anahtar = metin"; {name} sayfa tarafından doldurulur; \n yeni satırdır.
+
+app.title = Bytecoin · hafif cüzdan
+
+engine.loading = yükleniyor…
+engine.finding = düğüm aranıyor…
+engine.unsupported = desteklenmiyor
+engine.error = hata
+engine.no_wasm = Bu tarayıcı cüzdan motorunu çalıştıramıyor: WebAssembly desteği yok. Güncel bir Firefox, Chrome, Edge, Safari veya SeaMonkey kullanın.
+
+install.label = Uygulama olarak yükle
+install.button = Yükle
+install.later = Şimdi değil
+install.ios = Paylaş'a, ardından «Ana Ekrana Ekle»ye dokunun: cüzdan kendi simgesinden tam ekran açılır. Yüklenen uygulamanın Safari'den ayrı kendi depolama alanı vardır: cüzdanı orada yeniden geri yükleyin (en hızlısı yedek dosyasıyla). Simgeyi silmek uygulamadaki cüzdanı da siler, bu yüzden ifadeyi veya yedek dosyasını saklayın.
+install.android = Cüzdanı uygulama olarak yükleyin: Chrome'da ⋮ menüsünü açıp «Uygulamayı yükle»yi (veya «Ana ekrana ekle»yi) seçin; Samsung Internet'te: ☰ menüsü → «Sayfayı şuraya ekle» → «Ana ekran»; Firefox'ta: ⋮ menüsü → «Yükle». Böylece cüzdan kendi simgesinden tam ekran açılır. Android'de uygulama depolama alanını tarayıcıyla paylaşır, bu yüzden burada açtığınız cüzdan orada da olur.
+install.prompt = Cüzdanı yükleyin: kendi simgesinden tam ekran açılır ve çevrimdışı başlar.
+
+setup.label = Bu tarayıcıdaki cüzdan
+setup.intro = Anahtarlar bu cihazdan asla çıkmaz. Blok zinciri indirilmez: WebAssembly içindeki walletd bir düğümden yalnızca cüzdanın ihtiyaç duyduğu verileri ister.
+setup.new = Yeni cüzdan oluştur
+setup.restore_phrase = Kurtarma ifadesinden geri yükle
+setup.restore_file = Yedek dosyasından geri yükle
+
+restore.slow = Yavaş: ifade cüzdanın ne zaman oluşturulduğunu söylemez, bu yüzden amethyst güncellemesinden bu yana tüm zincir (≈1,9 milyon blok) taranır. Bu bir saat veya daha uzun sürer ve yaklaşık 2–3 GB indirir (Wi-Fi kullanın); telefonda ekran açık kalmalıdır. Yedek dosyanız varsa onunla geri yükleyin: oluşturma tarihini hatırlar ve çok daha hızlı biter.
+restore.words = 24 BIP39 kelimesi (amethyst cüzdanı). Arayüz dili ne olursa olsun kelimeler her zaman İngilizcedir.
+restore.words_placeholder = kelime1 kelime2 …
+restore.date_hint = İsteğe bağlı: cüzdan ne zaman oluşturuldu? Tarama o tarihten başlar. Emin değilseniz daha erken bir tarih seçin: ondan önce alınan ödemeler bulunmaz.
+restore.button = Geri yükle
+restore.bad_date = Oluşturma tarihi geçmiş bir tarih olmalıdır.
+restore.bad_phrase = Geçersiz kurtarma ifadesi (kelimeleri ve sağlama toplamını kontrol edin).
+restore.no_date = Oluşturma tarihi girilmedi.
+restore.full_scan = Amethyst güncellemesinden bu yana tüm zincir taranacak: bir saat veya daha uzun ve düğümden yaklaşık 2–3 GB indirme. Mobil veri değil Wi-Fi kullanın.
+restore.confirm_full = Tüm zincir taransın mı?
+
+import.text = «Güvenlik» bölümünde kaydedilen .amwbackup dosyası veya bir masaüstü cüzdanının .wallet dosyası (amethyst türü, adresi bcnZ ile başlar) ve parolası. Genellikle oluşturma tarihini hatırlarlar, bu yüzden geri yükleme saniyeler sürer.
+import.password = Dosya parolası
+import.date_hint = Kendisi ifadeden geri yüklenmiş bir masaüstü cüzdanı oluşturma tarihini saklamaz. Böyle bir dosya için cüzdanın ilk oluşturulduğu tarihi girin (emin değilseniz daha erken bir tarih); aksi halde tüm zincir taranır.
+import.choose = Bir dosya seçin.
+import.not_backup = Bu bir cüzdan yedek dosyası değil.
+import.decrypting = Şifre çözülüyor…
+import.bad_phrase = Yedekteki kurtarma ifadesi geçersiz.
+import.no_date = Bu dosyada oluşturma tarihi yok (cüzdan ifadesinden geri yüklenmiş).
+import.no_date_next = Yukarıya yaklaşık oluşturma tarihini girip Geri yükle'ye basın veya her şeyi taramak için Geri yükle'ye tekrar basın.
+import.unknown_file = Bilinmeyen dosya. Desteklenenler: .amwbackup ve bir masaüstü cüzdanının amethyst .wallet dosyası. Eski masaüstü cüzdanları (adresi 2 ile başlar) burada açılamaz.
+import.wrong_password = Yanlış parola veya hasarlı dosya.
+import.unknown_format = Bilinmeyen yedek biçimi.
+import.newer_format = Bilinmeyen yedek biçimi (daha yeni bir programla mı oluşturuldu?).
+import.other_net = Bu yedek başka bir ağa ait ({net}).
+import.not_amethyst = Bu yedek bir amethyst cüzdanı değil.
+
+desktop.wrong_password = Yanlış parola (bu cüzdanın masaüstü cüzdanındaki parolasını kullanın).
+desktop.view_only = Bu yalnızca görüntüleme cüzdanı: kurtarma ifadesi yoktur ve burada açılamaz.
+desktop.hardware = Bu cüzdan bir Ledger veya Trezor üzerinde: kurtarma ifadesi yoktur ve burada açılamaz.
+desktop.other_coin = Bu cüzdan başka bir coin için.
+desktop.unknown_version = Bilinmeyen cüzdan dosyası sürümü.
+desktop.not_wallet = Bu SQLite dosyası bir Bytecoin cüzdanı değil.
+desktop.not_sqlite = Bu bir masaüstü cüzdan dosyası değil.
+desktop.damaged = Cüzdan dosyası hasarlı ({error}).
+desktop.timeout = Cüzdan dosyasını okumak çok uzun sürdü.
+desktop.read_failed = Cüzdan dosyası okunamadı: {error}
+desktop.module_failed = İçe aktarma modülü yüklenemedi: {error}
+
+words.label = Kurtarma ifadenizi yazın
+words.warn = Cüzdanı geri yüklemenin tek yolu budur. Bu bir test prototipidir: burada önemli miktarda fon tutmayın.
+words.ok = Yazdım, devam et
+
+pin.label = Bir PIN seçin
+pin.text = Bu tarayıcıdaki cüzdanı şifreler. PIN olmadan cüzdan burada açılamaz, yalnızca kurtarma ifadesinden geri yüklenebilir.
+pin.pin = PIN
+pin.new = PIN, en az 6 karakter
+pin.repeat = PIN'i tekrarlayın
+pin.save = Cüzdanı kaydet
+pin.short = PIN en az {n} karakter olmalıdır.
+pin.mismatch = PIN'ler eşleşmiyor.
+pin.wrong = Yanlış PIN.
+pin.create_failed = Cüzdan oluşturulamadı: {error}
+
+unlock.label = Cüzdan kilitli
+unlock.button = Kilidi aç
+unlock.forget = Bu cüzdanı bu tarayıcıda unut
+unlock.failed = Cüzdan açılamadı: {error}
+
+wallet.balance = Bakiye
+wallet.locked = Kilitli / onaylanmamış:
+wallet.sync = Eşitleme
+wallet.address = Alma adresi
+wallet.copy = Adresi kopyala
+wallet.forget = Kapat ve cüzdanı bu tarayıcıda unut
+wallet.confirm_forget = Cüzdan bu tarayıcıdan kaldırılsın mı? Daha sonra yalnızca kurtarma ifadesinden geri yüklenebilir.
+
+sync.connecting = Düğüme bağlanılıyor…
+sync.synced = Eşitlendi
+sync.scanning = Taranıyor
+sync.no_walletd = walletd ile bağlantı yok: {error}
+
+awake.label = Tarama sırasında ekranı açık tut
+awake.hint = Tarama bitene kadar ekran kapanmaz, sonra her zamanki gibi kapanır. Pil tasarrufu için parlaklığı azaltın; telefon ısınabilir. Telefonu kilitlemek veya başka bir uygulamaya geçmek taramayı yine de duraklatır.
+awake.failed = Tarayıcı ekranın açık tutulmasına izin vermedi ({error}).
+
+send.label = BCN gönder
+send.to = Alıcı adresi (bcn…)
+send.amount = Tutar, BCN
+send.max = Tümü
+send.subtract = Ücreti tutardan düş
+send.prepare = Hazırla
+send.recipient = Alıcı
+send.c_amount = Tutar:
+send.c_fee = ücret:
+send.c_total = Düşülecek toplam:
+send.cancel = İptal
+send.send = Gönder
+send.no_address = Alıcı adresini girin.
+send.bad_address = Adres yanlış görünüyor: "bcn" ile başlamalıdır.
+send.own_address = Bu sizin kendi adresiniz.
+send.bad_amount = Geçersiz tutar: sıfırdan büyük, en fazla 8 ondalık basamaklı bir sayı.
+send.too_much = Tutar kullanılabilir {balance} BCN bakiyesini aşıyor.
+send.building = İşlem bu cihazda oluşturuluyor ve imzalanıyor…
+send.check = Bilgileri kontrol edin. Gönderilen işlem iptal edilemez.
+send.sending = Ağa gönderiliyor…
+send.sent = Gönderildi. İşlem hash'i: {hash}
+
+rpc.-301 = Yeterli onaylanmış bakiye yok (ücret dahil).
+rpc.-302 = İşlem bir bloğa sığmıyor: çok fazla küçük çıktı var. Daha küçük bir tutar gönderin veya birkaç ödemeye bölün.
+rpc.-303 = Düğüm karıştırma (anonimlik) için yeterli çıktı sağlamadı. Daha sonra deneyin veya başka bir düğüm kullanın.
+rpc.-304 = Bu yalnızca görüntüleme cüzdanı: gönderim yapamaz.
+rpc.-4 = Alıcı adresi çözümlenemedi.
+rpc.-101 = Düğüm işlem biçimini kabul etmedi.
+rpc.-102 = Çıktılar değişti (zincir yeniden düzenlemesi). İşlemi yeniden hazırlayın.
+rpc.-103 = Bazı çıktılar zaten harcanmış. İşlemi yeniden hazırlayın.
+rpc.-1003 = Düğüm bir hata döndürdü. Ayrıntılar walletd günlüğünde.
+
+tx.label = Son işlemler
+tx.none = henüz yok
+
+sec.label = Güvenlik
+sec.show_phrase = Kurtarma ifadesini göster (yedek)
+sec.show = Göster
+sec.export_show = Şifreli yedek dosyası kaydet
+sec.export_text = Dosya, ayrı bir parolayla (PIN değil) şifrelenmiş kurtarma ifadesini ve eşitlenmiş cüzdanın durumunu içerir; bu yüzden ondan geri yükleme yalnızca ilk ödemeden itibaren tarar. Dosyayı ve parolayı ayrı yerlerde saklayın.
+sec.export_pass = Yedek parolası, en az 10 karakter
+sec.export_pass2 = Yedek parolasını tekrarlayın
+sec.export_save = Dosyayı kaydet
+sec.export_short = Yedek parolası en az {n} karakter olmalıdır.
+sec.export_mismatch = Yedek parolaları eşleşmiyor.
+sec.export_same_as_pin = Yedek parolası PIN'den farklı olmalıdır.
+sec.export_passphrase = Bu cüzdan bir ifade parolasıyla (BIP39 passphrase) içe aktarıldı; bu sayfa onu yedeğe koyamaz. Masaüstü .wallet dosyasını veya kurtarma ifadesini o parolayla birlikte saklayın.
+sec.export_saving = Cüzdan durumu kaydediliyor…
+sec.export_encrypting = Şifreleniyor…
+sec.export_saved_state = Dosya, {height} numaralı bloktaki cüzdan durumuyla kaydedildi. İndirilenler klasöründe olduğunu kontrol edin ve parolayı ayrı saklayın.
+sec.export_saved_no_state = Dosya cüzdan durumu olmadan kaydedildi ({reason}): ondan geri yükleme oluşturma tarihinden itibaren tarar. İndirilenler klasöründe olduğunu kontrol edin ve parolayı ayrı saklayın.
+sec.export_failed = Yedek kaydedilemedi: {error}
+sec.pin_change = PIN'i değiştir
+sec.pin_old = Mevcut PIN
+sec.pin_new = Yeni PIN
+sec.pin_new2 = Yeni PIN'i tekrarlayın
+sec.pin_change_button = Değiştir
+sec.pin_old_wrong = Mevcut PIN yanlış.
+sec.pin_changed = PIN değiştirildi.
+sec.lock = Kilitle
+
+snap.not_synced = cüzdan henüz eşitlenmedi
+snap.no_block = düğüm {height} numaralı bloğu döndürmedi
+snap.no_key_image = bir çıktının key image'ı yok
+snap.mismatch = çıktıların toplamı bakiyeyle uyuşmuyor
+
+node.label = Düğüm
+node.searching = aranıyor…
+node.auto = Otomatik: bu site → topluluk düğümü → node01 → node02
+node.self = Bu site (kendi düğümüne proxy)
+node.community = node.bytecoin.community (topluluk)
+node.custom = Özel adres…
+node.apply = Uygula (cüzdan kilitlenecek)
+node.about = Düğüm, cüzdanın hangi blokları ve işlemleri istediğini ve IP adresinizi görür, ancak anahtarlarınızı görmez. node.bytecoin.community Bytecoin topluluğu tarafından; node01/node02 ise Bytecoin'in ilk geliştiricileri tarafından işletilir. Üçü de CORS'a izin verir, bu yüzden doğrudan tarayıcıdan çalışırlar. node01/node02 onaylanmamış işlem havuzlarını paylaşmaz: onlar üzerinden gelen bir ödeme bloğa girdiğinde görünür (≈2 dk).
+node.proxy = (bu sitenin proxy'si)
+node.note_manual = elle seçildi
+node.note_auto = otomatik
+node.note_auto_none = otomatik, hiçbir düğüm yanıt vermedi
+node.selected_down = Seçilen düğüm yanıt vermiyor. Aşağıdan başka birini seçebilirsiniz.
+node.none = Hiçbir düğüm yanıt vermedi. İnternet bağlantınızı kontrol edin veya kendi düğümünüzü girin.
+node.bad_address = Adres https://host:port biçiminde olmalıdır (http yalnızca localhost için).
+node.checking = Düğüm kontrol ediliyor…
+node.no_answer = Düğüm yanıt vermiyor veya tarayıcı isteklerine izin vermiyor (CORS).
+node.confirm_lock = Cüzdan kilitlenecek; PIN'i yeniden girmeniz gerekecek. Devam edilsin mi?
+
+log.label = walletd günlüğü

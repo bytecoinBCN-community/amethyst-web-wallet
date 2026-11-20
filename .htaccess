@@ -1,0 +1,36 @@
+# Apache (and nginx + Apache shared hosting): MIME types and caching for Amethyst Web Wallet.
+# The page, scripts and .wasm must never be served stale: walletd.js and walletd.wasm (and the legacy/ pair)
+# only work together, and an old app.js would keep running for days. "no-cache" still lets the browser
+# keep a copy; it only asks the server first (a cheap 304 when nothing changed).
+# On hostings where nginx serves static files itself, these rules may not reach .js/.wasm: check with
+#   curl -sI https://<site>/app.js   and   curl -sI https://<site>/walletd.wasm
+# and if needed set the same in the hosting panel. The service worker revalidates on its own anyway.
+
+<IfModule mod_mime.c>
+  AddType application/wasm .wasm
+  AddType application/manifest+json .webmanifest
+  AddType text/javascript .js
+  AddCharset utf-8 .txt .js .html
+</IfModule>
+
+<IfModule mod_expires.c>
+  <FilesMatch "\.(html?|js|wasm|webmanifest|txt)$">
+    ExpiresActive Off
+  </FilesMatch>
+</IfModule>
+
+<IfModule mod_headers.c>
+  <FilesMatch "\.(html?|js|wasm|webmanifest|txt)$">
+    Header unset Expires
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "no-referrer"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval'; worker-src 'self'; connect-src 'self' https: http://localhost:* http://127.0.0.1:*; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
+</IfModule>
+
+# Build and test files are not part of the site.
+<IfModule mod_alias.c>
+  RedirectMatch 404 ^/(build|tools|docs)(/|$)
+</IfModule>

@@ -55,163 +55,193 @@
   pre.log { max-height: 220px; overflow: auto; font-size: 11px; white-space: pre-wrap; word-break: break-all; margin: 8px 0 0; }
   .hidden { display: none; }
   .row { display: flex; gap: 8px; } .row > * { flex: 1; }
+  header { flex-wrap: wrap; gap: 6px 8px; }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand img { flex: 0 0 auto; width: 36px; height: 36px; display: block; }
+  .head-right { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+  select.lang { width: auto; padding: 3px 6px; font-size: 13px; border-radius: 8px; }
 </style>
 </head>
 <body>
 <main>
   <header>
-    <h1>Bytecoin · light wallet</h1>
-    <span id="engine" class="pill">loading…</span>
+    <span class="brand">
+      <img src="icon-192.png" alt="" width="36" height="36">
+      <h1 data-i18n="app.title">Bytecoin · light wallet</h1>
+    </span>
+    <span class="head-right">
+      <select id="lang-sel" class="lang" aria-label="Language"></select>
+      <span id="engine" class="pill">loading…</span>
+    </span>
   </header>
-  <p id="old-browser" class="warn hidden">This browser cannot run the wallet engine: it has no WebAssembly. Use a current Firefox, Chrome, Edge, Safari or SeaMonkey.</p>
+  <p id="old-browser" class="warn hidden" data-i18n="engine.no_wasm">This browser cannot run the wallet engine: it has no WebAssembly. Use a current Firefox, Chrome, Edge, Safari or SeaMonkey.</p>
+
+  <section id="install" class="card hidden">
+    <div class="label" data-i18n="install.label">Install as an app</div>
+    <p id="install-text" class="sub"></p>
+    <button id="btn-install" class="hidden" data-i18n="install.button">Install</button>
+    <button id="btn-install-hide" class="secondary" data-i18n="install.later">Not now</button>
+  </section>
 
   <section id="setup" class="card hidden">
-    <div class="label">Wallet in this browser</div>
-    <p class="sub">Keys never leave this device. The blockchain is not downloaded: walletd in WebAssembly asks a node only for the data the wallet needs.</p>
-    <button id="btn-new">Create a new wallet</button>
-    <button id="btn-restore-show" class="secondary">Restore from recovery phrase</button>
+    <div class="label" data-i18n="setup.label">Wallet in this browser</div>
+    <p class="sub" data-i18n="setup.intro">Keys never leave this device. The blockchain is not downloaded: walletd in WebAssembly asks a node only for the data the wallet needs.</p>
+    <button id="btn-new" data-i18n="setup.new">Create a new wallet</button>
+    <button id="btn-restore-show" class="secondary" data-i18n="setup.restore_phrase">Restore from recovery phrase</button>
     <div id="restore" class="hidden">
-      <p class="sub">24 BIP39 words (amethyst wallet). Scanning starts at the amethyst height (≈1,725,000).</p>
-      <textarea id="restore-words" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="word1 word2 …"></textarea>
-      <button id="btn-restore">Restore</button>
+      <p class="warn" data-i18n="restore.slow">Slow: the phrase does not say when the wallet was created, so the whole chain since the amethyst upgrade (≈1.9 million blocks) is scanned. This takes an hour or more and downloads about 2–3 GB (use Wi-Fi), and on a phone the screen must stay on. If you have a backup file, restore from it instead: it remembers the creation date and finishes much faster.</p>
+      <p class="sub" data-i18n="restore.words">24 BIP39 words (amethyst wallet). The words are always English, whatever the interface language.</p>
+      <textarea id="restore-words" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="word1 word2 …" data-i18n-placeholder="restore.words_placeholder"></textarea>
+      <p class="sub" style="margin-top:8px" data-i18n="restore.date_hint">Optional: when was the wallet created? Scanning then starts from that date. If unsure, pick an earlier date: payments received before it will not be found.</p>
+      <input id="restore-date" type="date" autocomplete="off">
+      <button id="btn-restore" data-i18n="restore.button">Restore</button>
     </div>
-    <button id="btn-import-show" class="secondary">Restore from backup file</button>
+    <button id="btn-import-show" class="secondary" data-i18n="setup.restore_file">Restore from backup file</button>
     <div id="import" class="hidden">
-      <p class="sub">The .amwbackup file saved under “Security”, and the password it was encrypted with.</p>
-      <input id="import-file" type="file" accept=".amwbackup,application/octet-stream">
-      <input id="import-pass" type="password" autocomplete="off" placeholder="Backup password" style="margin-top:8px">
-      <button id="btn-import">Restore</button>
+      <p class="sub" data-i18n="import.text">The .amwbackup file saved under “Security”, or the .wallet file of a desktop wallet (amethyst type, address starting with bcnZ), and its password. They usually remember the creation date, so restoring takes seconds.</p>
+      <!-- no accept filter: iOS greys out files whose type it does not know (.amwbackup), so they cannot be picked -->
+      <input id="import-file" type="file">
+      <input id="import-pass" type="password" autocomplete="off" placeholder="File password" data-i18n-placeholder="import.password" style="margin-top:8px">
+      <p class="sub" style="margin-top:8px" data-i18n="import.date_hint">A desktop wallet that was itself restored from its phrase keeps no creation date. For such a file, enter when the wallet was first created (if unsure, an earlier date), or the whole chain is scanned.</p>
+      <input id="import-date" type="date" autocomplete="off">
+      <button id="btn-import" data-i18n="restore.button">Restore</button>
       <p id="import-msg" class="warn"></p>
     </div>
   </section>
 
   <section id="newwords" class="card hidden">
-    <div class="label">Write down your recovery phrase</div>
-    <p class="warn">It is the only way to restore the wallet. This is a test prototype: do not keep significant funds here.</p>
+    <div class="label" data-i18n="words.label">Write down your recovery phrase</div>
+    <p class="warn" data-i18n="words.warn">It is the only way to restore the wallet. This is a test prototype: do not keep significant funds here.</p>
     <p id="words" class="mono"></p>
-    <button id="btn-words-ok">I wrote it down, continue</button>
+    <button id="btn-words-ok" data-i18n="words.ok">I wrote it down, continue</button>
   </section>
 
   <section id="setpin" class="card hidden">
-    <div class="label">Choose a PIN</div>
-    <p class="sub">It encrypts the wallet in this browser. Without the PIN the wallet cannot be opened here, only restored from the recovery phrase.</p>
-    <input id="pin1" type="password" inputmode="numeric" autocomplete="new-password" placeholder="PIN, at least 6 characters">
-    <input id="pin2" type="password" inputmode="numeric" autocomplete="new-password" placeholder="Repeat the PIN" style="margin-top:8px">
-    <button id="btn-pin-set">Save wallet</button>
+    <div class="label" data-i18n="pin.label">Choose a PIN</div>
+    <p class="sub" data-i18n="pin.text">It encrypts the wallet in this browser. Without the PIN the wallet cannot be opened here, only restored from the recovery phrase.</p>
+    <input id="pin1" type="password" inputmode="numeric" autocomplete="new-password" placeholder="PIN, at least 6 characters" data-i18n-placeholder="pin.new">
+    <input id="pin2" type="password" inputmode="numeric" autocomplete="new-password" placeholder="Repeat the PIN" data-i18n-placeholder="pin.repeat" style="margin-top:8px">
+    <button id="btn-pin-set" data-i18n="pin.save">Save wallet</button>
     <p id="setpin-msg" class="warn"></p>
   </section>
 
   <section id="unlock" class="card hidden">
-    <div class="label">Wallet locked</div>
+    <div class="label" data-i18n="unlock.label">Wallet locked</div>
     <p id="unlock-addr" class="mono sub"></p>
-    <input id="pin-unlock" type="password" inputmode="numeric" autocomplete="current-password" placeholder="PIN">
-    <button id="btn-unlock">Unlock</button>
+    <input id="pin-unlock" type="password" inputmode="numeric" autocomplete="current-password" placeholder="PIN" data-i18n-placeholder="pin.pin">
+    <button id="btn-unlock" data-i18n="unlock.button">Unlock</button>
     <p id="unlock-msg" class="warn"></p>
-    <button id="btn-unlock-forget" class="secondary">Forget this wallet in this browser</button>
+    <button id="btn-unlock-forget" class="secondary" data-i18n="unlock.forget">Forget this wallet in this browser</button>
   </section>
 
   <section id="wallet" class="hidden">
     <div class="card">
-      <div class="label">Balance</div>
+      <div class="label" data-i18n="wallet.balance">Balance</div>
       <div class="balance"><span id="bal">—</span> <span class="sub">BCN</span></div>
-      <div class="sub">Locked / unconfirmed: <span id="bal-locked">—</span></div>
+      <div class="sub"><span data-i18n="wallet.locked">Locked / unconfirmed:</span> <span id="bal-locked">—</span></div>
     </div>
     <div class="card">
-      <div class="label">Sync</div>
+      <div class="label" data-i18n="wallet.sync">Sync</div>
       <div class="progress"><div id="prog"></div></div>
       <div class="sub" id="sync">—</div>
+      <!-- shown on touch devices whose browser has the Screen Wake Lock API -->
+      <div id="awake-box" class="hidden">
+        <label class="sub" style="display:flex;gap:8px;align-items:center;margin-top:8px">
+          <input id="awake" type="checkbox" style="width:auto"> <span data-i18n="awake.label">Keep the screen on while scanning</span>
+        </label>
+        <p id="awake-hint" class="warn hidden" style="margin:6px 0 0" data-i18n="awake.hint">The screen stays on until scanning finishes, then turns off as usual. Turn the brightness down to save battery; the phone may get warm. Locking the phone or switching to another app still pauses scanning.</p>
+        <p id="awake-msg" class="warn" style="margin:6px 0 0"></p>
+      </div>
     </div>
     <div class="card">
-      <div class="label">Receiving address</div>
+      <div class="label" data-i18n="wallet.address">Receiving address</div>
       <p id="addr" class="mono">—</p>
-      <button id="btn-copy" class="secondary">Copy address</button>
+      <button id="btn-copy" class="secondary" data-i18n="wallet.copy">Copy address</button>
     </div>
     <div class="card">
-      <div class="label">Send BCN</div>
+      <div class="label" data-i18n="send.label">Send BCN</div>
       <div id="send-form">
-        <input id="send-to" placeholder="Recipient address (bcn…)" autocomplete="off" autocapitalize="off" spellcheck="false">
+        <input id="send-to" placeholder="Recipient address (bcn…)" data-i18n-placeholder="send.to" autocomplete="off" autocapitalize="off" spellcheck="false">
         <div class="row" style="margin-top:8px">
-          <input id="send-amount" inputmode="decimal" placeholder="Amount, BCN" autocomplete="off">
-          <button id="btn-max" class="secondary" style="margin-top:0;flex:0 0 auto;width:auto">Max</button>
+          <input id="send-amount" inputmode="decimal" placeholder="Amount, BCN" data-i18n-placeholder="send.amount" autocomplete="off">
+          <button id="btn-max" class="secondary" style="margin-top:0;flex:0 0 auto;width:auto" data-i18n="send.max">Max</button>
         </div>
         <label class="sub" style="display:flex;gap:8px;align-items:center;margin-top:8px">
-          <input id="send-subtract" type="checkbox" style="width:auto"> Subtract the fee from the amount
+          <input id="send-subtract" type="checkbox" style="width:auto"> <span data-i18n="send.subtract">Subtract the fee from the amount</span>
         </label>
-        <button id="btn-prepare">Prepare</button>
+        <button id="btn-prepare" data-i18n="send.prepare">Prepare</button>
       </div>
       <div id="send-confirm" class="hidden">
-        <p class="sub" style="margin:0 0 4px">Recipient</p>
+        <p class="sub" style="margin:0 0 4px" data-i18n="send.recipient">Recipient</p>
         <p id="c-to" class="mono" style="margin:0 0 8px"></p>
-        <p class="sub" style="margin:0">Amount: <b id="c-amount"></b> BCN · fee: <b id="c-fee"></b> BCN</p>
-        <p class="sub" style="margin:0">Total to be deducted: <b id="c-total"></b> BCN</p>
+        <p class="sub" style="margin:0"><span data-i18n="send.c_amount">Amount:</span> <b id="c-amount"></b> BCN · <span data-i18n="send.c_fee">fee:</span> <b id="c-fee"></b> BCN</p>
+        <p class="sub" style="margin:0"><span data-i18n="send.c_total">Total to be deducted:</span> <b id="c-total"></b> BCN</p>
         <div class="row">
-          <button id="btn-cancel" class="secondary">Cancel</button>
-          <button id="btn-send">Send</button>
+          <button id="btn-cancel" class="secondary" data-i18n="send.cancel">Cancel</button>
+          <button id="btn-send" data-i18n="send.send">Send</button>
         </div>
       </div>
       <p id="send-msg" class="sub" style="margin:8px 0 0"></p>
     </div>
     <div class="card">
-      <div class="label">Recent transactions</div>
-      <ul id="txs" class="tx"><li class="sub">none yet</li></ul>
+      <div class="label" data-i18n="tx.label">Recent transactions</div>
+      <ul id="txs" class="tx"><li class="sub" data-i18n="tx.none">none yet</li></ul>
     </div>
     <div class="card">
-      <div class="label">Security</div>
-      <button id="btn-backup-show" class="secondary">Show recovery phrase (backup)</button>
+      <div class="label" data-i18n="sec.label">Security</div>
+      <button id="btn-backup-show" class="secondary" data-i18n="sec.show_phrase">Show recovery phrase (backup)</button>
       <div id="backup" class="hidden">
-        <input id="pin-backup" type="password" inputmode="numeric" autocomplete="current-password" placeholder="PIN" style="margin-top:8px">
-        <button id="btn-backup">Show</button>
+        <input id="pin-backup" type="password" inputmode="numeric" autocomplete="current-password" placeholder="PIN" data-i18n-placeholder="pin.pin" style="margin-top:8px">
+        <button id="btn-backup" data-i18n="sec.show">Show</button>
         <p id="backup-words" class="mono"></p>
       </div>
-      <button id="btn-export-show" class="secondary">Save an encrypted backup file</button>
+      <button id="btn-export-show" class="secondary" data-i18n="sec.export_show">Save an encrypted backup file</button>
       <div id="export" class="hidden">
-        <p class="sub">The file holds the recovery phrase, encrypted with a separate password (not the PIN), and the wallet's
-          creation date, so restoring from it scans only blocks after that date. Keep the file and the password apart.</p>
-        <input id="pin-export" type="password" inputmode="numeric" autocomplete="current-password" placeholder="PIN" style="margin-top:8px">
-        <input id="export-pass1" type="password" autocomplete="new-password" placeholder="Backup password, at least 10 characters" style="margin-top:8px">
-        <input id="export-pass2" type="password" autocomplete="new-password" placeholder="Repeat the backup password" style="margin-top:8px">
-        <button id="btn-export">Save file</button>
+        <p class="sub" data-i18n="sec.export_text">The file holds the recovery phrase, encrypted with a separate password (not the PIN), and the state of the synced wallet, so restoring from it scans only from the first payment. Keep the file and the password apart.</p>
+        <input id="pin-export" type="password" inputmode="numeric" autocomplete="current-password" placeholder="PIN" data-i18n-placeholder="pin.pin" style="margin-top:8px">
+        <input id="export-pass1" type="password" autocomplete="new-password" placeholder="Backup password, at least 10 characters" data-i18n-placeholder="sec.export_pass" style="margin-top:8px">
+        <input id="export-pass2" type="password" autocomplete="new-password" placeholder="Repeat the backup password" data-i18n-placeholder="sec.export_pass2" style="margin-top:8px">
+        <button id="btn-export" data-i18n="sec.export_save">Save file</button>
       </div>
-      <button id="btn-pin-change-show" class="secondary">Change PIN</button>
+      <button id="btn-pin-change-show" class="secondary" data-i18n="sec.pin_change">Change PIN</button>
       <div id="pinchange" class="hidden">
-        <input id="pin-old" type="password" inputmode="numeric" autocomplete="current-password" placeholder="Current PIN" style="margin-top:8px">
-        <input id="pin-new1" type="password" inputmode="numeric" autocomplete="new-password" placeholder="New PIN" style="margin-top:8px">
-        <input id="pin-new2" type="password" inputmode="numeric" autocomplete="new-password" placeholder="Repeat the new PIN" style="margin-top:8px">
-        <button id="btn-pin-change">Change</button>
+        <input id="pin-old" type="password" inputmode="numeric" autocomplete="current-password" placeholder="Current PIN" data-i18n-placeholder="sec.pin_old" style="margin-top:8px">
+        <input id="pin-new1" type="password" inputmode="numeric" autocomplete="new-password" placeholder="New PIN" data-i18n-placeholder="sec.pin_new" style="margin-top:8px">
+        <input id="pin-new2" type="password" inputmode="numeric" autocomplete="new-password" placeholder="Repeat the new PIN" data-i18n-placeholder="sec.pin_new2" style="margin-top:8px">
+        <button id="btn-pin-change" data-i18n="sec.pin_change_button">Change</button>
       </div>
       <p id="sec-msg" class="sub"></p>
-      <button id="btn-lock">Lock</button>
+      <button id="btn-lock" data-i18n="sec.lock">Lock</button>
     </div>
-    <button id="btn-forget" class="secondary">Close and forget the wallet in this browser</button>
+    <button id="btn-forget" class="secondary" data-i18n="wallet.forget">Close and forget the wallet in this browser</button>
   </section>
 
   <div class="card">
-    <div class="label">Node</div>
+    <div class="label" data-i18n="node.label">Node</div>
     <p id="node-cur" class="sub mono" style="margin:0 0 8px">searching…</p>
     <select id="node-sel">
-      <option value="auto">Auto: this site → community node → node01 → node02</option>
-      <option value="self">This site (proxy to its own node)</option>
-      <option value="https://node.bytecoin.community:443">node.bytecoin.community (community)</option>
+      <option value="auto" data-i18n="node.auto">Auto: this site → community node → node01 → node02</option>
+      <option value="self" data-i18n="node.self">This site (proxy to its own node)</option>
+      <option value="https://node.bytecoin.community:443" data-i18n="node.community">node.bytecoin.community (community)</option>
       <option value="https://node01.bytecoin.org:8091">node01.bytecoin.org</option>
       <option value="https://node02.bytecoin.org:8091">node02.bytecoin.org</option>
-      <option value="custom">Custom address…</option>
+      <option value="custom" data-i18n="node.custom">Custom address…</option>
     </select>
     <input id="node-custom" class="hidden" placeholder="https://host:port" autocomplete="off" autocapitalize="off" spellcheck="false" style="margin-top:8px">
-    <button id="btn-node" class="secondary">Apply (the wallet will be locked)</button>
+    <button id="btn-node" class="secondary" data-i18n="node.apply">Apply (the wallet will be locked)</button>
     <p id="node-msg" class="warn"></p>
-    <p class="sub" style="margin:0">The node sees which blocks and transactions the wallet requests and your IP address, but not your keys.
-      node.bytecoin.community is run by the Bytecoin community; node01/node02 are run by the original Bytecoin developers.
-      All three allow CORS, so they work directly from the browser. node01/node02 do not share their pool of unconfirmed
-      transactions: through them an incoming payment appears once it is in a block (≈2 min).</p>
+    <p class="sub" style="margin:0" data-i18n="node.about">The node sees which blocks and transactions the wallet requests and your IP address, but not your keys. node.bytecoin.community is run by the Bytecoin community; node01/node02 are run by the original Bytecoin developers. All three allow CORS, so they work directly from the browser. node01/node02 do not share their pool of unconfirmed transactions: through them an incoming payment appears once it is in a block (≈2 min).</p>
   </div>
 
   <div class="card">
     <details>
-      <summary>walletd log</summary>
+      <summary data-i18n="log.label">walletd log</summary>
       <pre id="log" class="log mono"></pre>
     </details>
   </div>
 </main>
-<script src="app.js"></script>
+<!-- ?v= changes with each release: browsers without the service worker (or before it starts) then never use an old copy -->
+<script src="i18n.js?v=23"></script>
+<script src="app.js?v=23"></script>
 </body>
 </html>

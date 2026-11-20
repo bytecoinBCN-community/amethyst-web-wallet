@@ -1,0 +1,185 @@
+# Amethyst Web Wallet — português. Formato: "chave = texto"; {name} é preenchido pela página; \n é uma quebra de linha.
+
+app.title = Bytecoin · carteira leve
+
+engine.loading = carregando…
+engine.finding = procurando um nó…
+engine.unsupported = não suportado
+engine.error = erro
+engine.no_wasm = Este navegador não consegue executar o motor da carteira: ele não tem WebAssembly. Use uma versão atual do Firefox, Chrome, Edge, Safari ou SeaMonkey.
+
+install.label = Instalar como aplicativo
+install.button = Instalar
+install.later = Agora não
+install.ios = Toque em Compartilhar e depois em «Adicionar à Tela de Início»: a carteira abrirá em tela cheia pelo próprio ícone. O aplicativo instalado tem armazenamento próprio, separado do Safari: restaure a carteira nele novamente (o mais rápido é pelo arquivo de backup). Remover o ícone apaga a carteira guardada no aplicativo, então guarde a frase ou o arquivo de backup.
+install.android = Instale a carteira como aplicativo: no Chrome abra o menu ⋮ e escolha «Instalar app» (ou «Adicionar à tela inicial»); no Samsung Internet: menu ☰ → «Adicionar página a» → «Tela inicial»; no Firefox: menu ⋮ → «Instalar». Assim a carteira abrirá em tela cheia pelo próprio ícone. No Android o aplicativo compartilha o armazenamento com o navegador, então a carteira aberta aqui também estará lá.
+install.prompt = Instale a carteira: ela abrirá em tela cheia pelo próprio ícone e funcionará offline.
+
+setup.label = Carteira neste navegador
+setup.intro = As chaves nunca saem deste dispositivo. A blockchain não é baixada: o walletd em WebAssembly pede a um nó apenas os dados de que a carteira precisa.
+setup.new = Criar uma nova carteira
+setup.restore_phrase = Restaurar pela frase de recuperação
+setup.restore_file = Restaurar de um arquivo de backup
+
+restore.slow = Lento: a frase não informa quando a carteira foi criada, então toda a cadeia desde a atualização amethyst (≈1,9 milhão de blocos) é escaneada. Isso leva uma hora ou mais e baixa cerca de 2–3 GB (use Wi-Fi), e no celular a tela precisa ficar ligada. Se você tiver um arquivo de backup, restaure por ele: ele lembra a data de criação e termina muito mais rápido.
+restore.words = 24 palavras BIP39 (carteira amethyst). As palavras são sempre em inglês, qualquer que seja o idioma da interface.
+restore.words_placeholder = palavra1 palavra2 …
+restore.date_hint = Opcional: quando a carteira foi criada? A varredura começará nessa data. Se não tiver certeza, escolha uma data anterior: pagamentos recebidos antes dela não serão encontrados.
+restore.button = Restaurar
+restore.bad_date = A data de criação deve ser uma data passada.
+restore.bad_phrase = Frase de recuperação inválida (verifique as palavras e a soma de verificação).
+restore.no_date = Nenhuma data de criação informada.
+restore.full_scan = Toda a cadeia desde a atualização amethyst será escaneada: uma hora ou mais e cerca de 2–3 GB baixados do nó. Use Wi-Fi, não dados móveis.
+restore.confirm_full = Escanear a cadeia inteira?
+
+import.text = O arquivo .amwbackup salvo em «Segurança», ou o arquivo .wallet de uma carteira de desktop (tipo amethyst, endereço começando com bcnZ), e a senha dele. Normalmente eles lembram a data de criação, então a restauração leva segundos.
+import.password = Senha do arquivo
+import.date_hint = Uma carteira de desktop que foi restaurada pela própria frase não guarda a data de criação. Para esse arquivo, informe quando a carteira foi criada pela primeira vez (se não tiver certeza, uma data anterior); caso contrário, toda a cadeia é escaneada.
+import.choose = Escolha um arquivo.
+import.not_backup = Este não é um arquivo de backup de carteira.
+import.decrypting = Descriptografando…
+import.bad_phrase = A frase de recuperação do backup é inválida.
+import.no_date = Este arquivo não tem data de criação (a carteira foi restaurada pela frase).
+import.no_date_next = Informe acima a data aproximada de criação e toque em Restaurar, ou toque em Restaurar de novo para escanear tudo.
+import.unknown_file = Arquivo desconhecido. São aceitos .amwbackup e o arquivo .wallet amethyst de uma carteira de desktop. Carteiras de desktop antigas (endereço começando com 2) não podem ser abertas aqui.
+import.wrong_password = Senha errada ou arquivo danificado.
+import.unknown_format = Formato de backup desconhecido.
+import.newer_format = Formato de backup desconhecido (criado por um programa mais novo?).
+import.other_net = Este backup é de outra rede ({net}).
+import.not_amethyst = Este backup não é de uma carteira amethyst.
+
+desktop.wrong_password = Senha errada (use a senha desta carteira na carteira de desktop).
+desktop.view_only = É uma carteira somente leitura: ela não tem frase de recuperação e não pode ser aberta aqui.
+desktop.hardware = Esta carteira fica num Ledger ou Trezor: ela não tem frase de recuperação e não pode ser aberta aqui.
+desktop.other_coin = Esta carteira é de outra moeda.
+desktop.unknown_version = Versão desconhecida do arquivo de carteira.
+desktop.not_wallet = Este arquivo SQLite não é uma carteira Bytecoin.
+desktop.not_sqlite = Este não é um arquivo de carteira de desktop.
+desktop.damaged = O arquivo da carteira está danificado ({error}).
+desktop.timeout = A leitura do arquivo da carteira demorou demais.
+desktop.read_failed = Não foi possível ler o arquivo da carteira: {error}
+desktop.module_failed = Não foi possível carregar o módulo de importação: {error}
+
+words.label = Anote sua frase de recuperação
+words.warn = É a única forma de restaurar a carteira. Este é um protótipo de teste: não guarde valores significativos aqui.
+words.ok = Anotei, continuar
+
+pin.label = Escolha um PIN
+pin.text = Ele criptografa a carteira neste navegador. Sem o PIN a carteira não pode ser aberta aqui, apenas restaurada pela frase de recuperação.
+pin.pin = PIN
+pin.new = PIN, pelo menos 6 caracteres
+pin.repeat = Repita o PIN
+pin.save = Salvar carteira
+pin.short = O PIN deve ter pelo menos {n} caracteres.
+pin.mismatch = Os PINs não coincidem.
+pin.wrong = PIN errado.
+pin.create_failed = Não foi possível criar a carteira: {error}
+
+unlock.label = Carteira bloqueada
+unlock.button = Desbloquear
+unlock.forget = Esquecer esta carteira neste navegador
+unlock.failed = Não foi possível abrir a carteira: {error}
+
+wallet.balance = Saldo
+wallet.locked = Bloqueado / não confirmado:
+wallet.sync = Sincronização
+wallet.address = Endereço de recebimento
+wallet.copy = Copiar endereço
+wallet.forget = Fechar e esquecer a carteira neste navegador
+wallet.confirm_forget = Remover a carteira deste navegador? Depois ela só poderá ser restaurada pela frase de recuperação.
+
+sync.connecting = Conectando ao nó…
+sync.synced = Sincronizado
+sync.scanning = Escaneando
+sync.no_walletd = Sem conexão com o walletd: {error}
+
+awake.label = Manter a tela ligada durante a varredura
+awake.hint = A tela não apaga até a varredura terminar; depois apaga normalmente. Diminua o brilho para economizar bateria; o celular pode esquentar. Bloquear o celular ou mudar para outro aplicativo continua pausando a varredura.
+awake.failed = O navegador não permitiu manter a tela ligada ({error}).
+
+send.label = Enviar BCN
+send.to = Endereço do destinatário (bcn…)
+send.amount = Valor, BCN
+send.max = Máx.
+send.subtract = Descontar a taxa do valor
+send.prepare = Preparar
+send.recipient = Destinatário
+send.c_amount = Valor:
+send.c_fee = taxa:
+send.c_total = Total a ser debitado:
+send.cancel = Cancelar
+send.send = Enviar
+send.no_address = Informe o endereço do destinatário.
+send.bad_address = O endereço parece errado: ele deve começar com "bcn".
+send.own_address = Este é o seu próprio endereço.
+send.bad_amount = Valor inválido: um número maior que zero, com até 8 casas decimais.
+send.too_much = O valor ultrapassa o saldo disponível de {balance} BCN.
+send.building = Montando e assinando a transação neste dispositivo…
+send.check = Confira os dados. Uma transação enviada não pode ser cancelada.
+send.sending = Enviando para a rede…
+send.sent = Enviado. Hash da transação: {hash}
+
+rpc.-301 = Fundos confirmados insuficientes (incluindo a taxa).
+rpc.-302 = A transação não cabe num bloco: saídas pequenas demais. Envie um valor menor ou divida-o em vários pagamentos.
+rpc.-303 = O nó não forneceu saídas suficientes para a mistura (anonimato). Tente mais tarde ou use outro nó.
+rpc.-304 = É uma carteira somente leitura: ela não pode enviar.
+rpc.-4 = Não foi possível interpretar o endereço do destinatário.
+rpc.-101 = O nó não aceitou o formato da transação.
+rpc.-102 = As saídas mudaram (reorganização da cadeia). Prepare a transação novamente.
+rpc.-103 = Algumas saídas já foram gastas. Prepare a transação novamente.
+rpc.-1003 = O nó retornou um erro. Veja os detalhes no registro do walletd.
+
+tx.label = Transações recentes
+tx.none = nenhuma ainda
+
+sec.label = Segurança
+sec.show_phrase = Mostrar a frase de recuperação (backup)
+sec.show = Mostrar
+sec.export_show = Salvar um arquivo de backup criptografado
+sec.export_text = O arquivo contém a frase de recuperação, criptografada com uma senha separada (não o PIN), e o estado da carteira sincronizada, então restaurar por ele escaneia apenas a partir do primeiro pagamento. Guarde o arquivo e a senha separadamente.
+sec.export_pass = Senha do backup, pelo menos 10 caracteres
+sec.export_pass2 = Repita a senha do backup
+sec.export_save = Salvar arquivo
+sec.export_short = A senha do backup deve ter pelo menos {n} caracteres.
+sec.export_mismatch = As senhas do backup não coincidem.
+sec.export_same_as_pin = A senha do backup deve ser diferente do PIN.
+sec.export_passphrase = Esta carteira foi importada com uma senha da frase (BIP39 passphrase), que esta página não consegue colocar num backup. Guarde o arquivo .wallet de desktop, ou a frase de recuperação junto com essa senha.
+sec.export_saving = Salvando o estado da carteira…
+sec.export_encrypting = Criptografando…
+sec.export_saved_state = Arquivo salvo com o estado da carteira no bloco {height}. Verifique se ele está em Downloads e guarde a senha separadamente.
+sec.export_saved_no_state = Arquivo salvo sem o estado da carteira ({reason}): restaurar por ele escaneia a partir da data de criação. Verifique se ele está em Downloads e guarde a senha separadamente.
+sec.export_failed = Não foi possível salvar o backup: {error}
+sec.pin_change = Alterar PIN
+sec.pin_old = PIN atual
+sec.pin_new = Novo PIN
+sec.pin_new2 = Repita o novo PIN
+sec.pin_change_button = Alterar
+sec.pin_old_wrong = O PIN atual está errado.
+sec.pin_changed = PIN alterado.
+sec.lock = Bloquear
+
+snap.not_synced = a carteira ainda não está sincronizada
+snap.no_block = o nó não retornou o bloco {height}
+snap.no_key_image = uma saída não tem key image
+snap.mismatch = a soma das saídas não confere com o saldo
+
+node.label = Nó
+node.searching = procurando…
+node.auto = Automático: este site → nó da comunidade → node01 → node02
+node.self = Este site (proxy para o próprio nó)
+node.community = node.bytecoin.community (comunidade)
+node.custom = Endereço personalizado…
+node.apply = Aplicar (a carteira será bloqueada)
+node.about = O nó vê quais blocos e transações a carteira pede e o seu endereço IP, mas não as suas chaves. node.bytecoin.community é mantido pela comunidade Bytecoin; node01/node02, pelos desenvolvedores originais do Bytecoin. Os três permitem CORS, então funcionam direto do navegador. node01/node02 não compartilham o seu pool de transações não confirmadas: por eles, um pagamento recebido aparece quando entra num bloco (≈2 min).
+node.proxy = (proxy deste site)
+node.note_manual = escolhido manualmente
+node.note_auto = automático
+node.note_auto_none = automático, nenhum nó respondeu
+node.selected_down = O nó escolhido não responde. Você pode escolher outro abaixo.
+node.none = Nenhum nó respondeu. Verifique sua conexão com a internet ou informe seu próprio nó.
+node.bad_address = O endereço deve ser https://host:porta (http apenas para localhost).
+node.checking = Verificando o nó…
+node.no_answer = O nó não responde ou não permite requisições do navegador (CORS).
+node.confirm_lock = A carteira será bloqueada e será preciso digitar o PIN de novo. Continuar?
+
+log.label = registro do walletd

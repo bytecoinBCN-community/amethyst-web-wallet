@@ -1,0 +1,185 @@
+# Amethyst Web Wallet — Tiếng Việt. Định dạng: "khóa = văn bản"; {name} do trang điền vào; \n là xuống dòng.
+
+app.title = Bytecoin · ví nhẹ
+
+engine.loading = đang tải…
+engine.finding = đang tìm nút…
+engine.unsupported = không hỗ trợ
+engine.error = lỗi
+engine.no_wasm = Trình duyệt này không chạy được bộ máy ví: không có WebAssembly. Hãy dùng Firefox, Chrome, Edge, Safari hoặc SeaMonkey bản mới.
+
+install.label = Cài như ứng dụng
+install.button = Cài đặt
+install.later = Để sau
+install.ios = Chạm Chia sẻ, rồi «Thêm vào MH chính»: ví sẽ mở toàn màn hình từ biểu tượng riêng. Ứng dụng đã cài có bộ nhớ riêng, tách biệt với Safari: hãy khôi phục ví trong đó một lần nữa (nhanh nhất là bằng tệp sao lưu). Xóa biểu tượng sẽ xóa luôn ví lưu trong ứng dụng, vì vậy hãy giữ cụm từ hoặc tệp sao lưu.
+install.android = Cài ví như ứng dụng: trong Chrome mở menu ⋮ và chọn «Cài đặt ứng dụng» (hoặc «Thêm vào màn hình chính»); trong Samsung Internet: menu ☰ → «Thêm trang vào» → «Màn hình chờ»; trong Firefox: menu ⋮ → «Cài đặt». Khi đó ví mở toàn màn hình từ biểu tượng riêng. Trên Android ứng dụng dùng chung bộ nhớ với trình duyệt, nên ví bạn mở ở đây cũng có ở đó.
+install.prompt = Cài ví: ví mở toàn màn hình từ biểu tượng riêng và khởi động được khi không có mạng.
+
+setup.label = Ví trong trình duyệt này
+setup.intro = Khóa không bao giờ rời khỏi thiết bị này. Chuỗi khối không được tải xuống: walletd trong WebAssembly chỉ xin nút những dữ liệu ví cần.
+setup.new = Tạo ví mới
+setup.restore_phrase = Khôi phục từ cụm từ khôi phục
+setup.restore_file = Khôi phục từ tệp sao lưu
+
+restore.slow = Chậm: cụm từ không cho biết ví được tạo khi nào, nên toàn bộ chuỗi kể từ bản nâng cấp amethyst (≈1,9 triệu khối) sẽ được quét. Việc này mất một giờ hoặc hơn và tải về khoảng 2–3 GB (hãy dùng Wi-Fi), trên điện thoại màn hình phải luôn bật. Nếu bạn có tệp sao lưu, hãy khôi phục từ tệp đó: tệp nhớ ngày tạo và xong nhanh hơn nhiều.
+restore.words = 24 từ BIP39 (ví amethyst). Các từ luôn là tiếng Anh, bất kể ngôn ngữ giao diện.
+restore.words_placeholder = từ1 từ2 …
+restore.date_hint = Tùy chọn: ví được tạo khi nào? Khi đó việc quét bắt đầu từ ngày này. Nếu không chắc, hãy chọn ngày sớm hơn: các khoản nhận trước ngày đó sẽ không được tìm thấy.
+restore.button = Khôi phục
+restore.bad_date = Ngày tạo phải là một ngày trong quá khứ.
+restore.bad_phrase = Cụm từ khôi phục không hợp lệ (hãy kiểm tra các từ và tổng kiểm tra).
+restore.no_date = Chưa nhập ngày tạo.
+restore.full_scan = Toàn bộ chuỗi kể từ bản nâng cấp amethyst sẽ được quét: một giờ hoặc hơn và khoảng 2–3 GB tải từ nút. Hãy dùng Wi-Fi, không dùng dữ liệu di động.
+restore.confirm_full = Quét toàn bộ chuỗi?
+
+import.text = Tệp .amwbackup đã lưu trong mục «Bảo mật», hoặc tệp .wallet của ví máy tính (loại amethyst, địa chỉ bắt đầu bằng bcnZ), cùng mật khẩu của tệp. Thường các tệp này nhớ ngày tạo, nên khôi phục chỉ mất vài giây.
+import.password = Mật khẩu tệp
+import.date_hint = Ví máy tính mà chính nó được khôi phục từ cụm từ sẽ không lưu ngày tạo. Với tệp như vậy, hãy nhập ngày ví được tạo lần đầu (nếu không chắc, chọn ngày sớm hơn); nếu không, toàn bộ chuỗi sẽ được quét.
+import.choose = Hãy chọn một tệp.
+import.not_backup = Đây không phải tệp sao lưu ví.
+import.decrypting = Đang giải mã…
+import.bad_phrase = Cụm từ khôi phục trong bản sao lưu không hợp lệ.
+import.no_date = Tệp này không có ngày tạo (ví đã được khôi phục từ cụm từ).
+import.no_date_next = Nhập ngày tạo gần đúng ở trên rồi nhấn Khôi phục, hoặc nhấn Khôi phục lần nữa để quét tất cả.
+import.unknown_file = Tệp không xác định. Hỗ trợ: .amwbackup và tệp .wallet amethyst của ví máy tính. Ví máy tính cũ (địa chỉ bắt đầu bằng 2) không mở được ở đây.
+import.wrong_password = Sai mật khẩu hoặc tệp bị hỏng.
+import.unknown_format = Định dạng sao lưu không xác định.
+import.newer_format = Định dạng sao lưu không xác định (được tạo bởi chương trình mới hơn?).
+import.other_net = Bản sao lưu này dành cho mạng khác ({net}).
+import.not_amethyst = Bản sao lưu này không phải ví amethyst.
+
+desktop.wrong_password = Sai mật khẩu (hãy dùng mật khẩu của ví này trong ví máy tính).
+desktop.view_only = Đây là ví chỉ xem: không có cụm từ khôi phục nên không mở được ở đây.
+desktop.hardware = Ví này nằm trên Ledger hoặc Trezor: không có cụm từ khôi phục nên không mở được ở đây.
+desktop.other_coin = Ví này dành cho đồng tiền khác.
+desktop.unknown_version = Phiên bản tệp ví không xác định.
+desktop.not_wallet = Tệp SQLite này không phải ví Bytecoin.
+desktop.not_sqlite = Đây không phải tệp ví máy tính.
+desktop.damaged = Tệp ví bị hỏng ({error}).
+desktop.timeout = Đọc tệp ví mất quá nhiều thời gian.
+desktop.read_failed = Không đọc được tệp ví: {error}
+desktop.module_failed = Không tải được mô-đun nhập: {error}
+
+words.label = Hãy ghi lại cụm từ khôi phục
+words.warn = Đây là cách duy nhất để khôi phục ví. Đây là bản thử nghiệm: đừng giữ số tiền lớn ở đây.
+words.ok = Đã ghi lại, tiếp tục
+
+pin.label = Chọn mã PIN
+pin.text = Mã PIN mã hóa ví trong trình duyệt này. Không có PIN thì không mở được ví ở đây, chỉ có thể khôi phục từ cụm từ khôi phục.
+pin.pin = PIN
+pin.new = PIN, ít nhất 6 ký tự
+pin.repeat = Nhập lại PIN
+pin.save = Lưu ví
+pin.short = PIN phải có ít nhất {n} ký tự.
+pin.mismatch = Hai mã PIN không khớp.
+pin.wrong = Sai PIN.
+pin.create_failed = Không tạo được ví: {error}
+
+unlock.label = Ví đã khóa
+unlock.button = Mở khóa
+unlock.forget = Quên ví này trong trình duyệt này
+unlock.failed = Không mở được ví: {error}
+
+wallet.balance = Số dư
+wallet.locked = Đang khóa / chưa xác nhận:
+wallet.sync = Đồng bộ
+wallet.address = Địa chỉ nhận
+wallet.copy = Sao chép địa chỉ
+wallet.forget = Đóng và quên ví trong trình duyệt này
+wallet.confirm_forget = Xóa ví khỏi trình duyệt này? Sau đó chỉ có thể khôi phục ví từ cụm từ khôi phục.
+
+sync.connecting = Đang kết nối tới nút…
+sync.synced = Đã đồng bộ
+sync.scanning = Đang quét
+sync.no_walletd = Không kết nối được walletd: {error}
+
+awake.label = Giữ màn hình sáng khi đang quét
+awake.hint = Màn hình không tắt cho đến khi quét xong, sau đó tắt như bình thường. Hãy giảm độ sáng để tiết kiệm pin; điện thoại có thể nóng lên. Khóa điện thoại hoặc chuyển sang ứng dụng khác vẫn sẽ tạm dừng việc quét.
+awake.failed = Trình duyệt không cho phép giữ màn hình sáng ({error}).
+
+send.label = Gửi BCN
+send.to = Địa chỉ người nhận (bcn…)
+send.amount = Số tiền, BCN
+send.max = Tối đa
+send.subtract = Trừ phí vào số tiền
+send.prepare = Chuẩn bị
+send.recipient = Người nhận
+send.c_amount = Số tiền:
+send.c_fee = phí:
+send.c_total = Tổng bị trừ:
+send.cancel = Hủy
+send.send = Gửi
+send.no_address = Hãy nhập địa chỉ người nhận.
+send.bad_address = Địa chỉ có vẻ sai: phải bắt đầu bằng "bcn".
+send.own_address = Đây là địa chỉ của chính bạn.
+send.bad_amount = Số tiền không hợp lệ: một số lớn hơn 0, tối đa 8 chữ số thập phân.
+send.too_much = Số tiền vượt quá số dư khả dụng {balance} BCN.
+send.building = Đang lập và ký giao dịch trên thiết bị này…
+send.check = Hãy kiểm tra thông tin. Giao dịch đã gửi không thể hủy.
+send.sending = Đang gửi lên mạng…
+send.sent = Đã gửi. Mã băm giao dịch: {hash}
+
+rpc.-301 = Không đủ tiền đã xác nhận (kể cả phí).
+rpc.-302 = Giao dịch không vừa một khối: quá nhiều đầu ra nhỏ. Hãy gửi số tiền nhỏ hơn hoặc chia thành nhiều lần.
+rpc.-303 = Nút không cung cấp đủ đầu ra để trộn (ẩn danh). Hãy thử lại sau hoặc dùng nút khác.
+rpc.-304 = Đây là ví chỉ xem: không thể gửi.
+rpc.-4 = Không phân tích được địa chỉ người nhận.
+rpc.-101 = Nút không chấp nhận định dạng giao dịch.
+rpc.-102 = Các đầu ra đã thay đổi (tái tổ chức chuỗi). Hãy chuẩn bị lại giao dịch.
+rpc.-103 = Một số đầu ra đã được tiêu. Hãy chuẩn bị lại giao dịch.
+rpc.-1003 = Nút trả về lỗi. Xem chi tiết trong nhật ký walletd.
+
+tx.label = Giao dịch gần đây
+tx.none = chưa có
+
+sec.label = Bảo mật
+sec.show_phrase = Hiện cụm từ khôi phục (sao lưu)
+sec.show = Hiện
+sec.export_show = Lưu tệp sao lưu đã mã hóa
+sec.export_text = Tệp chứa cụm từ khôi phục, được mã hóa bằng một mật khẩu riêng (không phải PIN), và trạng thái của ví đã đồng bộ, nên khôi phục từ tệp chỉ quét từ khoản thanh toán đầu tiên. Hãy cất tệp và mật khẩu ở hai nơi riêng.
+sec.export_pass = Mật khẩu sao lưu, ít nhất 10 ký tự
+sec.export_pass2 = Nhập lại mật khẩu sao lưu
+sec.export_save = Lưu tệp
+sec.export_short = Mật khẩu sao lưu phải có ít nhất {n} ký tự.
+sec.export_mismatch = Hai mật khẩu sao lưu không khớp.
+sec.export_same_as_pin = Mật khẩu sao lưu phải khác PIN.
+sec.export_passphrase = Ví này được nhập với mật khẩu cụm từ (BIP39 passphrase), trang này không thể đưa mật khẩu đó vào bản sao lưu. Hãy giữ tệp .wallet máy tính, hoặc cụm từ khôi phục cùng với mật khẩu đó.
+sec.export_saving = Đang lưu trạng thái ví…
+sec.export_encrypting = Đang mã hóa…
+sec.export_saved_state = Đã lưu tệp với trạng thái ví tại khối {height}. Hãy kiểm tra tệp có trong thư mục Tải xuống và cất mật khẩu riêng.
+sec.export_saved_no_state = Đã lưu tệp không có trạng thái ví ({reason}): khôi phục từ tệp sẽ quét từ ngày tạo. Hãy kiểm tra tệp có trong thư mục Tải xuống và cất mật khẩu riêng.
+sec.export_failed = Không lưu được bản sao lưu: {error}
+sec.pin_change = Đổi PIN
+sec.pin_old = PIN hiện tại
+sec.pin_new = PIN mới
+sec.pin_new2 = Nhập lại PIN mới
+sec.pin_change_button = Đổi
+sec.pin_old_wrong = PIN hiện tại không đúng.
+sec.pin_changed = Đã đổi PIN.
+sec.lock = Khóa
+
+snap.not_synced = ví chưa đồng bộ xong
+snap.no_block = nút không trả về khối {height}
+snap.no_key_image = có đầu ra không có key image
+snap.mismatch = tổng các đầu ra không khớp với số dư
+
+node.label = Nút
+node.searching = đang tìm…
+node.auto = Tự động: trang này → nút cộng đồng → node01 → node02
+node.self = Trang này (proxy tới nút riêng của trang)
+node.community = node.bytecoin.community (cộng đồng)
+node.custom = Địa chỉ khác…
+node.apply = Áp dụng (ví sẽ bị khóa)
+node.about = Nút thấy ví yêu cầu những khối và giao dịch nào cùng địa chỉ IP của bạn, nhưng không thấy khóa của bạn. node.bytecoin.community do cộng đồng Bytecoin vận hành; node01/node02 do các nhà phát triển gốc của Bytecoin vận hành. Cả ba đều cho phép CORS nên dùng trực tiếp từ trình duyệt được. node01/node02 không chia sẻ nhóm giao dịch chưa xác nhận: qua chúng, khoản thanh toán đến chỉ hiện khi đã vào khối (≈2 phút).
+node.proxy = (proxy của trang này)
+node.note_manual = chọn thủ công
+node.note_auto = tự động
+node.note_auto_none = tự động, không nút nào trả lời
+node.selected_down = Nút đã chọn không trả lời. Bạn có thể chọn nút khác bên dưới.
+node.none = Không nút nào trả lời. Hãy kiểm tra kết nối internet hoặc nhập nút của riêng bạn.
+node.bad_address = Địa chỉ phải có dạng https://host:port (http chỉ dành cho localhost).
+node.checking = Đang kiểm tra nút…
+node.no_answer = Nút không trả lời hoặc không cho phép yêu cầu từ trình duyệt (CORS).
+node.confirm_lock = Ví sẽ bị khóa; bạn sẽ phải nhập lại PIN. Tiếp tục?
+
+log.label = nhật ký walletd

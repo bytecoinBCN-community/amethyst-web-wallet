@@ -1,0 +1,186 @@
+# Amethyst Web Wallet — English. Format: "key = text", one per line; {name} is filled in by the page; \n is a new line.
+# Every language file has the same keys (tools/check-lang.py). The recovery phrase is always English BIP39 words.
+
+app.title = Bytecoin · light wallet
+
+engine.loading = loading…
+engine.finding = finding a node…
+engine.unsupported = not supported
+engine.error = error
+engine.no_wasm = This browser cannot run the wallet engine: it has no WebAssembly. Use a current Firefox, Chrome, Edge, Safari or SeaMonkey.
+
+install.label = Install as an app
+install.button = Install
+install.later = Not now
+install.ios = Tap Share, then “Add to Home Screen”: the wallet opens full screen from its own icon. The installed app has its own storage, separate from Safari: restore the wallet in it again (the backup file is fastest). Removing the icon deletes the wallet stored in the app, so keep the phrase or the backup file.
+install.android = Install the wallet as an app: in Chrome open the menu ⋮ and choose “Install app” (or “Add to Home screen”); in Samsung Internet: menu ☰ → “Add page to” → “Home screen”; in Firefox: menu ⋮ → “Install”. The wallet then opens full screen from its own icon. On Android the app shares its storage with the browser, so the wallet you open here is there too.
+install.prompt = Install the wallet: it opens full screen from its own icon and starts offline.
+
+setup.label = Wallet in this browser
+setup.intro = Keys never leave this device. The blockchain is not downloaded: walletd in WebAssembly asks a node only for the data the wallet needs.
+setup.new = Create a new wallet
+setup.restore_phrase = Restore from recovery phrase
+setup.restore_file = Restore from backup file
+
+restore.slow = Slow: the phrase does not say when the wallet was created, so the whole chain since the amethyst upgrade (≈1.9 million blocks) is scanned. This takes an hour or more and downloads about 2–3 GB (use Wi-Fi), and on a phone the screen must stay on. If you have a backup file, restore from it instead: it remembers the creation date and finishes much faster.
+restore.words = 24 BIP39 words (amethyst wallet). The words are always English, whatever the interface language.
+restore.words_placeholder = word1 word2 …
+restore.date_hint = Optional: when was the wallet created? Scanning then starts from that date. If unsure, pick an earlier date: payments received before it will not be found.
+restore.button = Restore
+restore.bad_date = The creation date must be a past date.
+restore.bad_phrase = Invalid recovery phrase (check the words and the checksum).
+restore.no_date = No creation date entered.
+restore.full_scan = The whole chain since the amethyst upgrade will be scanned: an hour or more, and about 2–3 GB downloaded from the node. Use Wi-Fi, not mobile data.
+restore.confirm_full = Scan the whole chain?
+
+import.text = The .amwbackup file saved under “Security”, or the .wallet file of a desktop wallet (amethyst type, address starting with bcnZ), and its password. They usually remember the creation date, so restoring takes seconds.
+import.password = File password
+import.date_hint = A desktop wallet that was itself restored from its phrase keeps no creation date. For such a file, enter when the wallet was first created (if unsure, an earlier date), or the whole chain is scanned.
+import.choose = Choose a file.
+import.not_backup = This is not a wallet backup file.
+import.decrypting = Decrypting…
+import.bad_phrase = The recovery phrase in the backup is invalid.
+import.no_date = This file has no creation date (the wallet was restored from its phrase).
+import.no_date_next = Enter the approximate creation date above and press Restore, or press Restore again to scan everything.
+import.unknown_file = Unknown file. Supported: .amwbackup and the amethyst .wallet file of a desktop wallet. Old desktop wallets (address starting with 2) cannot be opened here.
+import.wrong_password = Wrong password or damaged file.
+import.unknown_format = Unknown backup format.
+import.newer_format = Unknown backup format (made by a newer program?).
+import.other_net = This backup is for another network ({net}).
+import.not_amethyst = This backup is not an amethyst wallet.
+
+desktop.wrong_password = Wrong password (use the password of this wallet in the desktop wallet).
+desktop.view_only = This is a view-only wallet: it has no recovery phrase and cannot be opened here.
+desktop.hardware = This wallet is kept on a Ledger or Trezor: it has no recovery phrase and cannot be opened here.
+desktop.other_coin = This wallet is for another coin.
+desktop.unknown_version = Unknown wallet file version.
+desktop.not_wallet = This SQLite file is not a Bytecoin wallet.
+desktop.not_sqlite = This is not a desktop wallet file.
+desktop.damaged = This wallet file is damaged ({error}).
+desktop.timeout = Reading the wallet file took too long.
+desktop.read_failed = Could not read the wallet file: {error}
+desktop.module_failed = Could not load the import module: {error}
+
+words.label = Write down your recovery phrase
+words.warn = It is the only way to restore the wallet. This is a test prototype: do not keep significant funds here.
+words.ok = I wrote it down, continue
+
+pin.label = Choose a PIN
+pin.text = It encrypts the wallet in this browser. Without the PIN the wallet cannot be opened here, only restored from the recovery phrase.
+pin.pin = PIN
+pin.new = PIN, at least 6 characters
+pin.repeat = Repeat the PIN
+pin.save = Save wallet
+pin.short = The PIN must be at least {n} characters.
+pin.mismatch = The PINs do not match.
+pin.wrong = Wrong PIN.
+pin.create_failed = Could not create the wallet: {error}
+
+unlock.label = Wallet locked
+unlock.button = Unlock
+unlock.forget = Forget this wallet in this browser
+unlock.failed = Could not open the wallet: {error}
+
+wallet.balance = Balance
+wallet.locked = Locked / unconfirmed:
+wallet.sync = Sync
+wallet.address = Receiving address
+wallet.copy = Copy address
+wallet.forget = Close and forget the wallet in this browser
+wallet.confirm_forget = Remove the wallet from this browser? It can then be restored only from the recovery phrase.
+
+sync.connecting = Connecting to the node…
+sync.synced = Synced
+sync.scanning = Scanning
+sync.no_walletd = No connection to walletd: {error}
+
+awake.label = Keep the screen on while scanning
+awake.hint = The screen stays on until scanning finishes, then turns off as usual. Turn the brightness down to save battery; the phone may get warm. Locking the phone or switching to another app still pauses scanning.
+awake.failed = The browser did not allow keeping the screen on ({error}).
+
+send.label = Send BCN
+send.to = Recipient address (bcn…)
+send.amount = Amount, BCN
+send.max = Max
+send.subtract = Subtract the fee from the amount
+send.prepare = Prepare
+send.recipient = Recipient
+send.c_amount = Amount:
+send.c_fee = fee:
+send.c_total = Total to be deducted:
+send.cancel = Cancel
+send.send = Send
+send.no_address = Enter the recipient address.
+send.bad_address = The address looks wrong: it must start with "bcn".
+send.own_address = This is your own address.
+send.bad_amount = Invalid amount: a number above zero, up to 8 decimal places.
+send.too_much = The amount exceeds the available balance of {balance} BCN.
+send.building = Building and signing the transaction on this device…
+send.check = Check the details. A sent transaction cannot be cancelled.
+send.sending = Sending to the network…
+send.sent = Sent. Transaction hash: {hash}
+
+rpc.-301 = Not enough confirmed funds (including the fee).
+rpc.-302 = The transaction does not fit in a block: too many small outputs. Send a smaller amount or split it into several payments.
+rpc.-303 = The node did not provide enough outputs for mixing (anonymity). Try later or use another node.
+rpc.-304 = This is a view-only wallet: it cannot send.
+rpc.-4 = The recipient address could not be parsed.
+rpc.-101 = The node did not accept the transaction format.
+rpc.-102 = Outputs changed (chain reorganization). Prepare the transaction again.
+rpc.-103 = Some outputs are already spent. Prepare the transaction again.
+rpc.-1003 = The node returned an error. See the walletd log for details.
+
+tx.label = Recent transactions
+tx.none = none yet
+
+sec.label = Security
+sec.show_phrase = Show recovery phrase (backup)
+sec.show = Show
+sec.export_show = Save an encrypted backup file
+sec.export_text = The file holds the recovery phrase, encrypted with a separate password (not the PIN), and the state of the synced wallet, so restoring from it scans only from the first payment. Keep the file and the password apart.
+sec.export_pass = Backup password, at least 10 characters
+sec.export_pass2 = Repeat the backup password
+sec.export_save = Save file
+sec.export_short = The backup password must be at least {n} characters.
+sec.export_mismatch = The backup passwords do not match.
+sec.export_same_as_pin = The backup password must differ from the PIN.
+sec.export_passphrase = This wallet was imported with a mnemonic password (BIP39 passphrase), which this page cannot put into a backup. Keep the desktop .wallet file, or the recovery phrase together with that password.
+sec.export_saving = Saving the wallet state…
+sec.export_encrypting = Encrypting…
+sec.export_saved_state = File saved with the wallet state at block {height}. Check that it is in your Downloads, and keep the password separately.
+sec.export_saved_no_state = File saved without the wallet state ({reason}): restoring from it scans from the creation date. Check that it is in your Downloads, and keep the password separately.
+sec.export_failed = Could not save the backup: {error}
+sec.pin_change = Change PIN
+sec.pin_old = Current PIN
+sec.pin_new = New PIN
+sec.pin_new2 = Repeat the new PIN
+sec.pin_change_button = Change
+sec.pin_old_wrong = The current PIN is wrong.
+sec.pin_changed = PIN changed.
+sec.lock = Lock
+
+snap.not_synced = the wallet is not synced yet
+snap.no_block = the node did not return block {height}
+snap.no_key_image = an output has no key image
+snap.mismatch = the outputs do not add up to the balance
+
+node.label = Node
+node.searching = searching…
+node.auto = Auto: this site → community node → node01 → node02
+node.self = This site (proxy to its own node)
+node.community = node.bytecoin.community (community)
+node.custom = Custom address…
+node.apply = Apply (the wallet will be locked)
+node.about = The node sees which blocks and transactions the wallet requests and your IP address, but not your keys. node.bytecoin.community is run by the Bytecoin community; node01/node02 are run by the original Bytecoin developers. All three allow CORS, so they work directly from the browser. node01/node02 do not share their pool of unconfirmed transactions: through them an incoming payment appears once it is in a block (≈2 min).
+node.proxy = (this site's proxy)
+node.note_manual = chosen manually
+node.note_auto = auto
+node.note_auto_none = auto, no node answered
+node.selected_down = The selected node does not answer. You can choose another one below.
+node.none = No node answered. Check your internet connection or enter your own node.
+node.bad_address = The address must be https://host:port (http only for localhost).
+node.checking = Checking the node…
+node.no_answer = The node does not answer or does not allow browser requests (CORS).
+node.confirm_lock = The wallet will be locked; you will need to enter the PIN again. Continue?
+
+log.label = walletd log

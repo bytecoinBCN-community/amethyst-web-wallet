@@ -5,8 +5,8 @@ Subject: [PATCH] walletd for the browser (WebAssembly)
 
 The source already has __EMSCRIPTEN__ paths for walletd (requests from
 JavaScript through embind, fetch() to the node, wallet and cache in
-IndexedDB, ext_create_wallet / ext_open_wallet RPC), used by the 2019
-Bytecoin Zero web wallet, but no entry point and no build for them.
+IndexedDB, ext_create_wallet / ext_open_wallet RPC), written by the
+Bytecoin developers in 2019, but no entry point and no build for them.
 
 - src/main_wasm.cpp: entry point, the equivalent of `walletd --app`.
   Exports create_mnemonic() and check_mnemonic() to JavaScript, because

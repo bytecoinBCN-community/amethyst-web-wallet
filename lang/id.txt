@@ -1,0 +1,185 @@
+# Amethyst Web Wallet — Bahasa Indonesia. Format: "kunci = teks"; {name} diisi oleh halaman; \n adalah baris baru.
+
+app.title = Bytecoin · dompet ringan
+
+engine.loading = memuat…
+engine.finding = mencari node…
+engine.unsupported = tidak didukung
+engine.error = galat
+engine.no_wasm = Peramban ini tidak dapat menjalankan mesin dompet: tidak ada WebAssembly. Gunakan Firefox, Chrome, Edge, Safari, atau SeaMonkey versi terbaru.
+
+install.label = Pasang sebagai aplikasi
+install.button = Pasang
+install.later = Nanti saja
+install.ios = Ketuk Bagikan, lalu «Tambahkan ke Layar Utama»: dompet terbuka layar penuh dari ikonnya sendiri. Aplikasi yang dipasang punya penyimpanan sendiri, terpisah dari Safari: pulihkan dompet di dalamnya sekali lagi (paling cepat dengan berkas cadangan). Menghapus ikon juga menghapus dompet yang tersimpan di aplikasi, jadi simpan frasa atau berkas cadangan.
+install.android = Pasang dompet sebagai aplikasi: di Chrome buka menu ⋮ lalu pilih «Instal aplikasi» (atau «Tambahkan ke layar utama»); di Samsung Internet: menu ☰ → «Tambah halaman ke» → «Layar Depan»; di Firefox: menu ⋮ → «Instal». Dompet lalu terbuka layar penuh dari ikonnya sendiri. Di Android aplikasi berbagi penyimpanan dengan peramban, jadi dompet yang Anda buka di sini juga ada di sana.
+install.prompt = Pasang dompet: terbuka layar penuh dari ikonnya sendiri dan bisa dimulai tanpa internet.
+
+setup.label = Dompet di peramban ini
+setup.intro = Kunci tidak pernah meninggalkan perangkat ini. Blockchain tidak diunduh: walletd dalam WebAssembly hanya meminta data yang dibutuhkan dompet dari sebuah node.
+setup.new = Buat dompet baru
+setup.restore_phrase = Pulihkan dari frasa pemulihan
+setup.restore_file = Pulihkan dari berkas cadangan
+
+restore.slow = Lambat: frasa tidak menyebutkan kapan dompet dibuat, jadi seluruh rantai sejak pembaruan amethyst (≈1,9 juta blok) dipindai. Ini butuh satu jam atau lebih dan mengunduh sekitar 2–3 GB (gunakan Wi-Fi), dan di ponsel layar harus tetap menyala. Jika Anda punya berkas cadangan, pulihkan dari berkas itu: ia mengingat tanggal pembuatan dan selesai jauh lebih cepat.
+restore.words = 24 kata BIP39 (dompet amethyst). Kata-katanya selalu dalam bahasa Inggris, apa pun bahasa antarmukanya.
+restore.words_placeholder = kata1 kata2 …
+restore.date_hint = Opsional: kapan dompet dibuat? Pemindaian akan dimulai dari tanggal itu. Jika ragu, pilih tanggal yang lebih awal: pembayaran yang diterima sebelumnya tidak akan ditemukan.
+restore.button = Pulihkan
+restore.bad_date = Tanggal pembuatan harus tanggal yang sudah lewat.
+restore.bad_phrase = Frasa pemulihan tidak valid (periksa kata-kata dan checksum-nya).
+restore.no_date = Tanggal pembuatan tidak diisi.
+restore.full_scan = Seluruh rantai sejak pembaruan amethyst akan dipindai: satu jam atau lebih dan sekitar 2–3 GB diunduh dari node. Gunakan Wi-Fi, bukan data seluler.
+restore.confirm_full = Pindai seluruh rantai?
+
+import.text = Berkas .amwbackup yang disimpan di «Keamanan», atau berkas .wallet dari dompet desktop (tipe amethyst, alamat diawali bcnZ), beserta kata sandinya. Biasanya berkas ini mengingat tanggal pembuatan, jadi pemulihan hanya butuh beberapa detik.
+import.password = Kata sandi berkas
+import.date_hint = Dompet desktop yang dirinya sendiri dipulihkan dari frasa tidak menyimpan tanggal pembuatan. Untuk berkas seperti itu, isi kapan dompet pertama kali dibuat (jika ragu, tanggal yang lebih awal); jika tidak, seluruh rantai akan dipindai.
+import.choose = Pilih berkas.
+import.not_backup = Ini bukan berkas cadangan dompet.
+import.decrypting = Mendekripsi…
+import.bad_phrase = Frasa pemulihan di dalam cadangan tidak valid.
+import.no_date = Berkas ini tidak punya tanggal pembuatan (dompet dipulihkan dari frasanya).
+import.no_date_next = Isi perkiraan tanggal pembuatan di atas lalu tekan Pulihkan, atau tekan Pulihkan sekali lagi untuk memindai semuanya.
+import.unknown_file = Berkas tidak dikenal. Yang didukung: .amwbackup dan berkas .wallet amethyst dari dompet desktop. Dompet desktop lama (alamat diawali 2) tidak bisa dibuka di sini.
+import.wrong_password = Kata sandi salah atau berkas rusak.
+import.unknown_format = Format cadangan tidak dikenal.
+import.newer_format = Format cadangan tidak dikenal (dibuat oleh program yang lebih baru?).
+import.other_net = Cadangan ini untuk jaringan lain ({net}).
+import.not_amethyst = Cadangan ini bukan dompet amethyst.
+
+desktop.wrong_password = Kata sandi salah (gunakan kata sandi dompet ini di dompet desktop).
+desktop.view_only = Ini dompet hanya-lihat: tidak punya frasa pemulihan dan tidak bisa dibuka di sini.
+desktop.hardware = Dompet ini tersimpan di Ledger atau Trezor: tidak punya frasa pemulihan dan tidak bisa dibuka di sini.
+desktop.other_coin = Dompet ini untuk koin lain.
+desktop.unknown_version = Versi berkas dompet tidak dikenal.
+desktop.not_wallet = Berkas SQLite ini bukan dompet Bytecoin.
+desktop.not_sqlite = Ini bukan berkas dompet desktop.
+desktop.damaged = Berkas dompet rusak ({error}).
+desktop.timeout = Membaca berkas dompet terlalu lama.
+desktop.read_failed = Tidak dapat membaca berkas dompet: {error}
+desktop.module_failed = Tidak dapat memuat modul impor: {error}
+
+words.label = Catat frasa pemulihan Anda
+words.warn = Ini satu-satunya cara memulihkan dompet. Ini prototipe uji coba: jangan simpan dana besar di sini.
+words.ok = Sudah saya catat, lanjutkan
+
+pin.label = Pilih PIN
+pin.text = PIN mengenkripsi dompet di peramban ini. Tanpa PIN dompet tidak bisa dibuka di sini, hanya dipulihkan dari frasa pemulihan.
+pin.pin = PIN
+pin.new = PIN, minimal 6 karakter
+pin.repeat = Ulangi PIN
+pin.save = Simpan dompet
+pin.short = PIN harus minimal {n} karakter.
+pin.mismatch = PIN tidak cocok.
+pin.wrong = PIN salah.
+pin.create_failed = Tidak dapat membuat dompet: {error}
+
+unlock.label = Dompet terkunci
+unlock.button = Buka kunci
+unlock.forget = Lupakan dompet ini di peramban ini
+unlock.failed = Tidak dapat membuka dompet: {error}
+
+wallet.balance = Saldo
+wallet.locked = Terkunci / belum dikonfirmasi:
+wallet.sync = Sinkronisasi
+wallet.address = Alamat penerimaan
+wallet.copy = Salin alamat
+wallet.forget = Tutup dan lupakan dompet di peramban ini
+wallet.confirm_forget = Hapus dompet dari peramban ini? Setelah itu dompet hanya bisa dipulihkan dari frasa pemulihan.
+
+sync.connecting = Menghubungkan ke node…
+sync.synced = Tersinkron
+sync.scanning = Memindai
+sync.no_walletd = Tidak ada koneksi ke walletd: {error}
+
+awake.label = Biarkan layar menyala selama pemindaian
+awake.hint = Layar tetap menyala sampai pemindaian selesai, lalu mati seperti biasa. Kurangi kecerahan untuk menghemat baterai; ponsel bisa menjadi hangat. Mengunci ponsel atau berpindah ke aplikasi lain tetap menjeda pemindaian.
+awake.failed = Peramban tidak mengizinkan layar tetap menyala ({error}).
+
+send.label = Kirim BCN
+send.to = Alamat penerima (bcn…)
+send.amount = Jumlah, BCN
+send.max = Maks
+send.subtract = Potong biaya dari jumlah
+send.prepare = Siapkan
+send.recipient = Penerima
+send.c_amount = Jumlah:
+send.c_fee = biaya:
+send.c_total = Total yang dipotong:
+send.cancel = Batal
+send.send = Kirim
+send.no_address = Isi alamat penerima.
+send.bad_address = Alamat tampaknya salah: harus diawali "bcn".
+send.own_address = Ini alamat Anda sendiri.
+send.bad_amount = Jumlah tidak valid: angka di atas nol, maksimal 8 angka desimal.
+send.too_much = Jumlah melebihi saldo tersedia sebesar {balance} BCN.
+send.building = Menyusun dan menandatangani transaksi di perangkat ini…
+send.check = Periksa rinciannya. Transaksi yang sudah dikirim tidak bisa dibatalkan.
+send.sending = Mengirim ke jaringan…
+send.sent = Terkirim. Hash transaksi: {hash}
+
+rpc.-301 = Dana terkonfirmasi tidak cukup (termasuk biaya).
+rpc.-302 = Transaksi tidak muat dalam satu blok: terlalu banyak output kecil. Kirim jumlah yang lebih kecil atau bagi menjadi beberapa pembayaran.
+rpc.-303 = Node tidak menyediakan cukup output untuk pencampuran (anonimitas). Coba lagi nanti atau gunakan node lain.
+rpc.-304 = Ini dompet hanya-lihat: tidak bisa mengirim.
+rpc.-4 = Alamat penerima tidak dapat diurai.
+rpc.-101 = Node tidak menerima format transaksi.
+rpc.-102 = Output berubah (reorganisasi rantai). Siapkan transaksi lagi.
+rpc.-103 = Beberapa output sudah terpakai. Siapkan transaksi lagi.
+rpc.-1003 = Node mengembalikan galat. Lihat rinciannya di log walletd.
+
+tx.label = Transaksi terbaru
+tx.none = belum ada
+
+sec.label = Keamanan
+sec.show_phrase = Tampilkan frasa pemulihan (cadangan)
+sec.show = Tampilkan
+sec.export_show = Simpan berkas cadangan terenkripsi
+sec.export_text = Berkas berisi frasa pemulihan yang dienkripsi dengan kata sandi terpisah (bukan PIN) dan status dompet yang sudah tersinkron, jadi pemulihan darinya hanya memindai sejak pembayaran pertama. Simpan berkas dan kata sandi di tempat terpisah.
+sec.export_pass = Kata sandi cadangan, minimal 10 karakter
+sec.export_pass2 = Ulangi kata sandi cadangan
+sec.export_save = Simpan berkas
+sec.export_short = Kata sandi cadangan harus minimal {n} karakter.
+sec.export_mismatch = Kata sandi cadangan tidak cocok.
+sec.export_same_as_pin = Kata sandi cadangan harus berbeda dari PIN.
+sec.export_passphrase = Dompet ini diimpor dengan kata sandi frasa (BIP39 passphrase), yang tidak bisa dimasukkan halaman ini ke cadangan. Simpan berkas .wallet desktop, atau frasa pemulihan beserta kata sandi itu.
+sec.export_saving = Menyimpan status dompet…
+sec.export_encrypting = Mengenkripsi…
+sec.export_saved_state = Berkas disimpan dengan status dompet di blok {height}. Pastikan berkas ada di folder Unduhan, dan simpan kata sandinya terpisah.
+sec.export_saved_no_state = Berkas disimpan tanpa status dompet ({reason}): pemulihan darinya memindai sejak tanggal pembuatan. Pastikan berkas ada di folder Unduhan, dan simpan kata sandinya terpisah.
+sec.export_failed = Tidak dapat menyimpan cadangan: {error}
+sec.pin_change = Ganti PIN
+sec.pin_old = PIN saat ini
+sec.pin_new = PIN baru
+sec.pin_new2 = Ulangi PIN baru
+sec.pin_change_button = Ganti
+sec.pin_old_wrong = PIN saat ini salah.
+sec.pin_changed = PIN telah diganti.
+sec.lock = Kunci
+
+snap.not_synced = dompet belum tersinkron
+snap.no_block = node tidak mengembalikan blok {height}
+snap.no_key_image = ada output tanpa key image
+snap.mismatch = jumlah output tidak sama dengan saldo
+
+node.label = Node
+node.searching = mencari…
+node.auto = Otomatis: situs ini → node komunitas → node01 → node02
+node.self = Situs ini (proxy ke node miliknya)
+node.community = node.bytecoin.community (komunitas)
+node.custom = Alamat lain…
+node.apply = Terapkan (dompet akan dikunci)
+node.about = Node melihat blok dan transaksi mana yang diminta dompet serta alamat IP Anda, tetapi tidak melihat kunci Anda. node.bytecoin.community dijalankan oleh komunitas Bytecoin; node01/node02 oleh pengembang asli Bytecoin. Ketiganya mengizinkan CORS, jadi bisa dipakai langsung dari peramban. node01/node02 tidak membagikan kumpulan transaksi yang belum dikonfirmasi: melalui keduanya, pembayaran masuk muncul setelah masuk ke blok (≈2 menit).
+node.proxy = (proxy situs ini)
+node.note_manual = dipilih manual
+node.note_auto = otomatis
+node.note_auto_none = otomatis, tidak ada node yang menjawab
+node.selected_down = Node yang dipilih tidak menjawab. Anda bisa memilih yang lain di bawah.
+node.none = Tidak ada node yang menjawab. Periksa koneksi internet Anda atau isi node Anda sendiri.
+node.bad_address = Alamat harus berupa https://host:port (http hanya untuk localhost).
+node.checking = Memeriksa node…
+node.no_answer = Node tidak menjawab atau tidak mengizinkan permintaan dari peramban (CORS).
+node.confirm_lock = Dompet akan dikunci; Anda perlu memasukkan PIN lagi. Lanjutkan?
+
+log.label = log walletd

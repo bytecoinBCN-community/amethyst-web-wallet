@@ -1,5 +1,5 @@
 #!/bin/bash
-# Builds walletd.wasm and walletworker.wasm from public sources, so anyone can check the binaries this site serves:
+# Builds walletd.wasm, walletworker.wasm and desktop-import.wasm from public sources, so anyone can check the binaries this site serves:
 #   Bytecoin v3.5.1 (github.com/bytecoinBCN-community/bytecoin, tag v3.5.1) + patches/*.patch,
 #   Emscripten 3.1.64 and Boost 1.83 headers from Ubuntu 24.04, both in Docker.
 # Usage: build/build.sh [output dir, default ./build/out]. Needs git and Docker. Takes about half an hour on 4 cores.
@@ -25,11 +25,14 @@ mkdir -p "$W/inc"
 docker run --rm -v "$W/inc:/out" ubuntu:24.04 sh -c \
   'apt-get update -qq >/dev/null && apt-get install -y -qq --no-install-recommends libboost1.83-dev >/dev/null && cp -r /usr/include/boost /out/ && chown -R '"$(id -u):$(id -g)"' /out'
 
-cp "$HERE/emcc_build.sh" "$W/emcc_build.sh"
+cp "$HERE/emcc_build.sh" "$HERE/emcc_import.sh" "$HERE/desktop_import.c" "$W/"
 FILES="walletd.js walletd.wasm walletworker.js walletworker.wasm"
 # the normal build, then the legacy one for browsers without WebAssembly exception handling (legacy/)
 docker run --rm -u "$(id -u):$(id -g)" -e HOME=/tmp -v "$W:/w" -w /w "$EMSDK" bash /w/emcc_build.sh
 docker run --rm -u "$(id -u):$(id -g)" -e HOME=/tmp -e LEGACY=1 -v "$W:/w" -w /w "$EMSDK" bash /w/emcc_build.sh
+# import of desktop walletd .wallet files: one build for all browsers (emsdk downloads its SQLite port here)
+docker run --rm -u "$(id -u):$(id -g)" -e HOME=/tmp -v "$W:/w" -w /w "$EMSDK" bash /w/emcc_import.sh
 mkdir -p "$OUT/legacy"
 for f in $FILES; do cp "$W/out/$f" "$OUT/"; cp "$W/out-legacy/$f" "$OUT/legacy/"; done
-cd "$OUT" && sha256sum $FILES $(for f in $FILES; do echo legacy/$f; done)
+cp "$W/out-import/desktop-import.js" "$W/out-import/desktop-import.wasm" "$OUT/"
+cd "$OUT" && sha256sum $FILES $(for f in $FILES; do echo legacy/$f; done) desktop-import.js desktop-import.wasm

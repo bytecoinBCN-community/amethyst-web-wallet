@@ -1,0 +1,185 @@
+# Amethyst Web Wallet — español. Formato: "clave = texto"; {name} lo rellena la página; \n es un salto de línea.
+
+app.title = Bytecoin · monedero ligero
+
+engine.loading = cargando…
+engine.finding = buscando un nodo…
+engine.unsupported = no compatible
+engine.error = error
+engine.no_wasm = Este navegador no puede ejecutar el motor del monedero: no tiene WebAssembly. Use una versión actual de Firefox, Chrome, Edge, Safari o SeaMonkey.
+
+install.label = Instalar como aplicación
+install.button = Instalar
+install.later = Ahora no
+install.ios = Toque Compartir y luego «Añadir a pantalla de inicio»: el monedero se abrirá a pantalla completa desde su propio icono. La aplicación instalada tiene su propio almacenamiento, separado de Safari: restaure el monedero en ella de nuevo (lo más rápido es con el archivo de copia). Al eliminar el icono se borra el monedero guardado en la aplicación, así que conserve la frase o el archivo de copia.
+install.android = Instale el monedero como aplicación: en Chrome abra el menú ⋮ y elija «Instalar aplicación» (o «Añadir a pantalla de inicio»); en Samsung Internet: menú ☰ → «Añadir página a» → «Pantalla de inicio»; en Firefox: menú ⋮ → «Instalar». Así el monedero se abrirá a pantalla completa desde su propio icono. En Android la aplicación comparte el almacenamiento con el navegador, así que el monedero que abra aquí también estará allí.
+install.prompt = Instale el monedero: se abrirá a pantalla completa desde su propio icono y funcionará sin conexión.
+
+setup.label = Monedero en este navegador
+setup.intro = Las claves nunca salen de este dispositivo. La cadena de bloques no se descarga: walletd en WebAssembly pide a un nodo solo los datos que el monedero necesita.
+setup.new = Crear un monedero nuevo
+setup.restore_phrase = Restaurar con la frase de recuperación
+setup.restore_file = Restaurar desde un archivo de copia
+
+restore.slow = Lento: la frase no indica cuándo se creó el monedero, así que se escanea toda la cadena desde la actualización amethyst (≈1,9 millones de bloques). Tarda una hora o más y descarga unos 2–3 GB (use Wi-Fi), y en un teléfono la pantalla debe permanecer encendida. Si tiene un archivo de copia, restaure desde él: recuerda la fecha de creación y termina mucho antes.
+restore.words = 24 palabras BIP39 (monedero amethyst). Las palabras son siempre en inglés, sea cual sea el idioma de la interfaz.
+restore.words_placeholder = palabra1 palabra2 …
+restore.date_hint = Opcional: ¿cuándo se creó el monedero? El escaneo empezará en esa fecha. Si no está seguro, elija una fecha anterior: los pagos recibidos antes de ella no se encontrarán.
+restore.button = Restaurar
+restore.bad_date = La fecha de creación debe ser una fecha pasada.
+restore.bad_phrase = Frase de recuperación no válida (compruebe las palabras y la suma de control).
+restore.no_date = No se indicó la fecha de creación.
+restore.full_scan = Se escaneará toda la cadena desde la actualización amethyst: una hora o más y unos 2–3 GB descargados del nodo. Use Wi-Fi, no datos móviles.
+restore.confirm_full = ¿Escanear toda la cadena?
+
+import.text = El archivo .amwbackup guardado en «Seguridad», o el archivo .wallet de un monedero de escritorio (tipo amethyst, dirección que empieza por bcnZ), y su contraseña. Normalmente recuerdan la fecha de creación, así que la restauración tarda segundos.
+import.password = Contraseña del archivo
+import.date_hint = Un monedero de escritorio que a su vez se restauró con su frase no guarda la fecha de creación. Para ese archivo, indique cuándo se creó el monedero por primera vez (si no está seguro, una fecha anterior); si no, se escanea toda la cadena.
+import.choose = Elija un archivo.
+import.not_backup = Este no es un archivo de copia del monedero.
+import.decrypting = Descifrando…
+import.bad_phrase = La frase de recuperación de la copia no es válida.
+import.no_date = Este archivo no tiene fecha de creación (el monedero se restauró con su frase).
+import.no_date_next = Indique arriba la fecha aproximada de creación y pulse Restaurar, o pulse Restaurar otra vez para escanearlo todo.
+import.unknown_file = Archivo desconocido. Se admiten .amwbackup y el archivo .wallet amethyst de un monedero de escritorio. Los monederos de escritorio antiguos (dirección que empieza por 2) no se pueden abrir aquí.
+import.wrong_password = Contraseña incorrecta o archivo dañado.
+import.unknown_format = Formato de copia desconocido.
+import.newer_format = Formato de copia desconocido (¿creado por un programa más reciente?).
+import.other_net = Esta copia es de otra red ({net}).
+import.not_amethyst = Esta copia no es de un monedero amethyst.
+
+desktop.wrong_password = Contraseña incorrecta (use la contraseña de este monedero en el monedero de escritorio).
+desktop.view_only = Es un monedero de solo lectura: no tiene frase de recuperación y no se puede abrir aquí.
+desktop.hardware = Este monedero está en un Ledger o Trezor: no tiene frase de recuperación y no se puede abrir aquí.
+desktop.other_coin = Este monedero es de otra moneda.
+desktop.unknown_version = Versión desconocida del archivo de monedero.
+desktop.not_wallet = Este archivo SQLite no es un monedero Bytecoin.
+desktop.not_sqlite = No es un archivo de monedero de escritorio.
+desktop.damaged = El archivo del monedero está dañado ({error}).
+desktop.timeout = La lectura del archivo del monedero tardó demasiado.
+desktop.read_failed = No se pudo leer el archivo del monedero: {error}
+desktop.module_failed = No se pudo cargar el módulo de importación: {error}
+
+words.label = Anote su frase de recuperación
+words.warn = Es la única forma de restaurar el monedero. Es un prototipo de prueba: no guarde aquí cantidades importantes.
+words.ok = La he anotado, continuar
+
+pin.label = Elija un PIN
+pin.text = Cifra el monedero en este navegador. Sin el PIN el monedero no se puede abrir aquí, solo restaurar con la frase de recuperación.
+pin.pin = PIN
+pin.new = PIN, al menos 6 caracteres
+pin.repeat = Repita el PIN
+pin.save = Guardar monedero
+pin.short = El PIN debe tener al menos {n} caracteres.
+pin.mismatch = Los PIN no coinciden.
+pin.wrong = PIN incorrecto.
+pin.create_failed = No se pudo crear el monedero: {error}
+
+unlock.label = Monedero bloqueado
+unlock.button = Desbloquear
+unlock.forget = Olvidar este monedero en este navegador
+unlock.failed = No se pudo abrir el monedero: {error}
+
+wallet.balance = Saldo
+wallet.locked = Bloqueado / sin confirmar:
+wallet.sync = Sincronización
+wallet.address = Dirección de recepción
+wallet.copy = Copiar dirección
+wallet.forget = Cerrar y olvidar el monedero en este navegador
+wallet.confirm_forget = ¿Eliminar el monedero de este navegador? Después solo se podrá restaurar con la frase de recuperación.
+
+sync.connecting = Conectando con el nodo…
+sync.synced = Sincronizado
+sync.scanning = Escaneando
+sync.no_walletd = Sin conexión con walletd: {error}
+
+awake.label = Mantener la pantalla encendida durante el escaneo
+awake.hint = La pantalla no se apaga hasta que termina el escaneo; después se apaga como siempre. Baje el brillo para ahorrar batería; el teléfono puede calentarse. Si bloquea el teléfono o cambia a otra aplicación, el escaneo se pausa igualmente.
+awake.failed = El navegador no permitió mantener la pantalla encendida ({error}).
+
+send.label = Enviar BCN
+send.to = Dirección del destinatario (bcn…)
+send.amount = Cantidad, BCN
+send.max = Máx.
+send.subtract = Restar la comisión de la cantidad
+send.prepare = Preparar
+send.recipient = Destinatario
+send.c_amount = Cantidad:
+send.c_fee = comisión:
+send.c_total = Total a descontar:
+send.cancel = Cancelar
+send.send = Enviar
+send.no_address = Introduzca la dirección del destinatario.
+send.bad_address = La dirección parece incorrecta: debe empezar por "bcn".
+send.own_address = Es su propia dirección.
+send.bad_amount = Cantidad no válida: un número mayor que cero, con hasta 8 decimales.
+send.too_much = La cantidad supera el saldo disponible de {balance} BCN.
+send.building = Creando y firmando la transacción en este dispositivo…
+send.check = Compruebe los datos. Una transacción enviada no se puede cancelar.
+send.sending = Enviando a la red…
+send.sent = Enviado. Hash de la transacción: {hash}
+
+rpc.-301 = No hay fondos confirmados suficientes (incluida la comisión).
+rpc.-302 = La transacción no cabe en un bloque: demasiadas salidas pequeñas. Envíe una cantidad menor o divídala en varios pagos.
+rpc.-303 = El nodo no proporcionó suficientes salidas para la mezcla (anonimato). Inténtelo más tarde o use otro nodo.
+rpc.-304 = Es un monedero de solo lectura: no puede enviar.
+rpc.-4 = No se pudo interpretar la dirección del destinatario.
+rpc.-101 = El nodo no aceptó el formato de la transacción.
+rpc.-102 = Las salidas cambiaron (reorganización de la cadena). Prepare la transacción de nuevo.
+rpc.-103 = Algunas salidas ya están gastadas. Prepare la transacción de nuevo.
+rpc.-1003 = El nodo devolvió un error. Vea los detalles en el registro de walletd.
+
+tx.label = Transacciones recientes
+tx.none = aún no hay
+
+sec.label = Seguridad
+sec.show_phrase = Mostrar la frase de recuperación (copia)
+sec.show = Mostrar
+sec.export_show = Guardar un archivo de copia cifrado
+sec.export_text = El archivo contiene la frase de recuperación, cifrada con una contraseña aparte (no el PIN), y el estado del monedero sincronizado, así que restaurar desde él escanea solo desde el primer pago. Guarde el archivo y la contraseña por separado.
+sec.export_pass = Contraseña de la copia, al menos 10 caracteres
+sec.export_pass2 = Repita la contraseña de la copia
+sec.export_save = Guardar archivo
+sec.export_short = La contraseña de la copia debe tener al menos {n} caracteres.
+sec.export_mismatch = Las contraseñas de la copia no coinciden.
+sec.export_same_as_pin = La contraseña de la copia debe ser distinta del PIN.
+sec.export_passphrase = Este monedero se importó con una contraseña de la frase (BIP39 passphrase), que esta página no puede guardar en una copia. Conserve el archivo .wallet de escritorio, o la frase de recuperación junto con esa contraseña.
+sec.export_saving = Guardando el estado del monedero…
+sec.export_encrypting = Cifrando…
+sec.export_saved_state = Archivo guardado con el estado del monedero en el bloque {height}. Compruebe que está en Descargas y guarde la contraseña por separado.
+sec.export_saved_no_state = Archivo guardado sin el estado del monedero ({reason}): restaurar desde él escanea desde la fecha de creación. Compruebe que está en Descargas y guarde la contraseña por separado.
+sec.export_failed = No se pudo guardar la copia: {error}
+sec.pin_change = Cambiar PIN
+sec.pin_old = PIN actual
+sec.pin_new = PIN nuevo
+sec.pin_new2 = Repita el PIN nuevo
+sec.pin_change_button = Cambiar
+sec.pin_old_wrong = El PIN actual es incorrecto.
+sec.pin_changed = PIN cambiado.
+sec.lock = Bloquear
+
+snap.not_synced = el monedero aún no está sincronizado
+snap.no_block = el nodo no devolvió el bloque {height}
+snap.no_key_image = una salida no tiene key image
+snap.mismatch = la suma de las salidas no coincide con el saldo
+
+node.label = Nodo
+node.searching = buscando…
+node.auto = Automático: este sitio → nodo de la comunidad → node01 → node02
+node.self = Este sitio (proxy a su propio nodo)
+node.community = node.bytecoin.community (comunidad)
+node.custom = Dirección propia…
+node.apply = Aplicar (el monedero se bloqueará)
+node.about = El nodo ve qué bloques y transacciones pide el monedero y su dirección IP, pero no sus claves. node.bytecoin.community lo mantiene la comunidad Bytecoin; node01/node02, los desarrolladores originales de Bytecoin. Los tres permiten CORS, así que funcionan directamente desde el navegador. node01/node02 no comparten su conjunto de transacciones sin confirmar: a través de ellos un pago entrante aparece cuando entra en un bloque (≈2 min).
+node.proxy = (proxy de este sitio)
+node.note_manual = elegido a mano
+node.note_auto = automático
+node.note_auto_none = automático, ningún nodo respondió
+node.selected_down = El nodo elegido no responde. Puede elegir otro abajo.
+node.none = Ningún nodo respondió. Compruebe su conexión a internet o indique su propio nodo.
+node.bad_address = La dirección debe ser https://host:puerto (http solo para localhost).
+node.checking = Comprobando el nodo…
+node.no_answer = El nodo no responde o no permite peticiones del navegador (CORS).
+node.confirm_lock = El monedero se bloqueará y tendrá que introducir el PIN de nuevo. ¿Continuar?
+
+log.label = registro de walletd

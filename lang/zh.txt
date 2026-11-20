@@ -1,0 +1,185 @@
+# Amethyst Web Wallet — 中文（简体）。格式："键 = 文本"；{name} 由页面填入；\n 表示换行。
+
+app.title = Bytecoin · 轻钱包
+
+engine.loading = 加载中…
+engine.finding = 正在寻找节点…
+engine.unsupported = 不支持
+engine.error = 错误
+engine.no_wasm = 此浏览器无法运行钱包引擎：它不支持 WebAssembly。请使用最新版的 Firefox、Chrome、Edge、Safari 或 SeaMonkey。
+
+install.label = 安装为应用
+install.button = 安装
+install.later = 以后再说
+install.ios = 点按“分享”，然后点“添加到主屏幕”：钱包将从自己的图标全屏打开。已安装的应用拥有独立于 Safari 的存储空间：请在其中重新恢复钱包（用备份文件最快）。删除图标也会删除应用中保存的钱包，所以请保管好助记词或备份文件。
+install.android = 将钱包安装为应用：在 Chrome 中打开菜单 ⋮，选择“安装应用”（或“添加到主屏幕”）；在三星浏览器中：菜单 ☰ →“添加页面至”→“主屏幕”；在 Firefox 中：菜单 ⋮ →“安装”。之后钱包将从自己的图标全屏打开。在 Android 上，应用与浏览器共用存储，因此在这里打开的钱包在应用中也有。
+install.prompt = 安装钱包：它将从自己的图标全屏打开，并可离线启动。
+
+setup.label = 此浏览器中的钱包
+setup.intro = 密钥永远不会离开此设备。不会下载区块链：WebAssembly 中的 walletd 只向节点请求钱包所需的数据。
+setup.new = 创建新钱包
+setup.restore_phrase = 用助记词恢复
+setup.restore_file = 从备份文件恢复
+
+restore.slow = 较慢：助记词不包含钱包的创建时间，因此会扫描自 amethyst 升级以来的整条链（约 190 万个区块）。这需要一小时或更久，下载约 2–3 GB（请使用 Wi-Fi），手机屏幕必须保持开启。如果您有备份文件，请改用它恢复：它记得创建日期，完成得快得多。
+restore.words = 24 个 BIP39 单词（amethyst 钱包）。无论界面语言如何，单词始终是英文。
+restore.words_placeholder = 单词1 单词2 …
+restore.date_hint = 可选：钱包是什么时候创建的？扫描将从该日期开始。如果不确定，请选更早的日期：在此日期之前收到的付款将不会被找到。
+restore.button = 恢复
+restore.bad_date = 创建日期必须是过去的日期。
+restore.bad_phrase = 助记词无效（请检查单词和校验和）。
+restore.no_date = 未填写创建日期。
+restore.full_scan = 将扫描自 amethyst 升级以来的整条链：需要一小时或更久，并从节点下载约 2–3 GB。请使用 Wi-Fi，不要用移动数据。
+restore.confirm_full = 扫描整条链？
+
+import.text = 在“安全”中保存的 .amwbackup 文件，或桌面钱包的 .wallet 文件（amethyst 类型，地址以 bcnZ 开头），以及它的密码。它们通常记得创建日期，因此恢复只需几秒钟。
+import.password = 文件密码
+import.date_hint = 本身是用助记词恢复的桌面钱包不保存创建日期。对于这样的文件，请填写钱包首次创建的时间（如不确定，填更早的日期），否则将扫描整条链。
+import.choose = 请选择文件。
+import.not_backup = 这不是钱包备份文件。
+import.decrypting = 正在解密…
+import.bad_phrase = 备份中的助记词无效。
+import.no_date = 此文件没有创建日期（该钱包是用助记词恢复的）。
+import.no_date_next = 请在上方填写大致的创建日期并点“恢复”，或再点一次“恢复”以扫描全部。
+import.unknown_file = 未知文件。支持：.amwbackup 以及桌面钱包的 amethyst .wallet 文件。旧的桌面钱包（地址以 2 开头）无法在此打开。
+import.wrong_password = 密码错误或文件已损坏。
+import.unknown_format = 未知的备份格式。
+import.newer_format = 未知的备份格式（由更新的程序创建？）。
+import.other_net = 此备份属于其他网络（{net}）。
+import.not_amethyst = 此备份不是 amethyst 钱包。
+
+desktop.wrong_password = 密码错误（请使用此钱包在桌面钱包中的密码）。
+desktop.view_only = 这是只读钱包：它没有助记词，无法在此打开。
+desktop.hardware = 此钱包保存在 Ledger 或 Trezor 上：它没有助记词，无法在此打开。
+desktop.other_coin = 此钱包属于其他币种。
+desktop.unknown_version = 未知的钱包文件版本。
+desktop.not_wallet = 此 SQLite 文件不是 Bytecoin 钱包。
+desktop.not_sqlite = 这不是桌面钱包文件。
+desktop.damaged = 钱包文件已损坏（{error}）。
+desktop.timeout = 读取钱包文件耗时过长。
+desktop.read_failed = 无法读取钱包文件：{error}
+desktop.module_failed = 无法加载导入模块：{error}
+
+words.label = 请抄写您的助记词
+words.warn = 这是恢复钱包的唯一方式。这是测试原型：请勿在此存放大额资金。
+words.ok = 我已抄写，继续
+
+pin.label = 设置 PIN
+pin.text = 它在此浏览器中加密钱包。没有 PIN 就无法在此打开钱包，只能用助记词恢复。
+pin.pin = PIN
+pin.new = PIN，至少 6 个字符
+pin.repeat = 再次输入 PIN
+pin.save = 保存钱包
+pin.short = PIN 至少需要 {n} 个字符。
+pin.mismatch = 两次输入的 PIN 不一致。
+pin.wrong = PIN 错误。
+pin.create_failed = 无法创建钱包：{error}
+
+unlock.label = 钱包已锁定
+unlock.button = 解锁
+unlock.forget = 在此浏览器中忘记此钱包
+unlock.failed = 无法打开钱包：{error}
+
+wallet.balance = 余额
+wallet.locked = 锁定 / 未确认：
+wallet.sync = 同步
+wallet.address = 收款地址
+wallet.copy = 复制地址
+wallet.forget = 关闭并在此浏览器中忘记钱包
+wallet.confirm_forget = 要从此浏览器中删除钱包吗？之后只能用助记词恢复。
+
+sync.connecting = 正在连接节点…
+sync.synced = 已同步
+sync.scanning = 扫描中
+sync.no_walletd = 无法连接 walletd：{error}
+
+awake.label = 扫描时保持屏幕常亮
+awake.hint = 扫描完成前屏幕不会熄灭，之后照常熄屏。请调低亮度以节省电量；手机可能会发热。锁定手机或切换到其他应用仍会暂停扫描。
+awake.failed = 浏览器不允许保持屏幕常亮（{error}）。
+
+send.label = 发送 BCN
+send.to = 收款地址（bcn…）
+send.amount = 金额，BCN
+send.max = 最大
+send.subtract = 从金额中扣除手续费
+send.prepare = 准备
+send.recipient = 收款人
+send.c_amount = 金额：
+send.c_fee = 手续费：
+send.c_total = 总共扣除：
+send.cancel = 取消
+send.send = 发送
+send.no_address = 请输入收款地址。
+send.bad_address = 地址似乎有误：必须以 "bcn" 开头。
+send.own_address = 这是您自己的地址。
+send.bad_amount = 金额无效：须为大于零的数字，最多 8 位小数。
+send.too_much = 金额超过可用余额 {balance} BCN。
+send.building = 正在此设备上构建并签名交易…
+send.check = 请核对信息。已发送的交易无法撤销。
+send.sending = 正在发送到网络…
+send.sent = 已发送。交易哈希：{hash}
+
+rpc.-301 = 已确认的资金不足（含手续费）。
+rpc.-302 = 交易无法放入一个区块：小额输出过多。请发送较小金额或拆分为多笔付款。
+rpc.-303 = 节点未提供足够的混币（匿名）输出。请稍后再试或换一个节点。
+rpc.-304 = 这是只读钱包：无法发送。
+rpc.-4 = 无法解析收款地址。
+rpc.-101 = 节点不接受该交易格式。
+rpc.-102 = 输出已变化（链重组）。请重新准备交易。
+rpc.-103 = 部分输出已被花费。请重新准备交易。
+rpc.-1003 = 节点返回错误。详情见 walletd 日志。
+
+tx.label = 最近交易
+tx.none = 暂无
+
+sec.label = 安全
+sec.show_phrase = 显示助记词（备份）
+sec.show = 显示
+sec.export_show = 保存加密备份文件
+sec.export_text = 该文件包含用单独密码（不是 PIN）加密的助记词，以及已同步钱包的状态，因此用它恢复时只需从第一笔付款开始扫描。请将文件和密码分开保管。
+sec.export_pass = 备份密码，至少 10 个字符
+sec.export_pass2 = 再次输入备份密码
+sec.export_save = 保存文件
+sec.export_short = 备份密码至少需要 {n} 个字符。
+sec.export_mismatch = 两次输入的备份密码不一致。
+sec.export_same_as_pin = 备份密码必须与 PIN 不同。
+sec.export_passphrase = 此钱包是用助记词密码（BIP39 passphrase）导入的，本页面无法将其写入备份。请保留桌面 .wallet 文件，或将助记词与该密码一起保管。
+sec.export_saving = 正在保存钱包状态…
+sec.export_encrypting = 正在加密…
+sec.export_saved_state = 文件已保存，包含区块 {height} 时的钱包状态。请确认它在“下载”中，并单独保管密码。
+sec.export_saved_no_state = 文件已保存，但不含钱包状态（{reason}）：用它恢复将从创建日期开始扫描。请确认它在“下载”中，并单独保管密码。
+sec.export_failed = 无法保存备份：{error}
+sec.pin_change = 修改 PIN
+sec.pin_old = 当前 PIN
+sec.pin_new = 新 PIN
+sec.pin_new2 = 再次输入新 PIN
+sec.pin_change_button = 修改
+sec.pin_old_wrong = 当前 PIN 错误。
+sec.pin_changed = PIN 已修改。
+sec.lock = 锁定
+
+snap.not_synced = 钱包尚未同步
+snap.no_block = 节点未返回区块 {height}
+snap.no_key_image = 有输出缺少 key image
+snap.mismatch = 输出总和与余额不符
+
+node.label = 节点
+node.searching = 搜索中…
+node.auto = 自动：本站 → 社区节点 → node01 → node02
+node.self = 本站（代理到其自有节点）
+node.community = node.bytecoin.community（社区）
+node.custom = 自定义地址…
+node.apply = 应用（钱包将被锁定）
+node.about = 节点能看到钱包请求了哪些区块和交易以及您的 IP 地址，但看不到您的密钥。node.bytecoin.community 由 Bytecoin 社区运营；node01/node02 由 Bytecoin 原开发者运营。三者都允许 CORS，因此可直接在浏览器中使用。node01/node02 不共享其未确认交易池：通过它们，收到的付款要进入区块后才会显示（约 2 分钟）。
+node.proxy = （本站代理）
+node.note_manual = 手动选择
+node.note_auto = 自动
+node.note_auto_none = 自动，没有节点响应
+node.selected_down = 所选节点无响应。您可以在下方选择其他节点。
+node.none = 没有节点响应。请检查网络连接或填写您自己的节点。
+node.bad_address = 地址必须是 https://host:port（http 仅限 localhost）。
+node.checking = 正在检查节点…
+node.no_answer = 节点无响应或不允许浏览器请求（CORS）。
+node.confirm_lock = 钱包将被锁定，您需要重新输入 PIN。继续吗？
+
+log.label = walletd 日志
